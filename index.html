@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cosmos Quiz 🪐</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#534AB7;--teal:#5DCAA5;--teal-light:#9FE1CB;
+  --red:#E24B4A;--amber:#EF9F27;
+  --bg:#05071a;--card:rgba(255,255,255,0.04);--border:rgba(130,120,240,0.3);
+  --text:#e8eeff;--muted:rgba(200,210,255,0.55);--hint:rgba(180,190,255,0.35);
+}
+html,body{min-height:100%;background:var(--bg);font-family:'Nunito',sans-serif;color:var(--text);overflow-x:hidden}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d,2s) ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:var(--min,.15);transform:scale(1)}to{opacity:1;transform:scale(1.5)}}
+.nebula{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:1}
+.nebula-1{width:700px;height:700px;background:rgba(83,74,183,0.16);top:-200px;left:-150px}
+.nebula-2{width:500px;height:500px;background:rgba(29,158,117,0.11);bottom:-100px;right:-100px}
+.nebula-3{width:400px;height:400px;background:rgba(24,95,165,0.12);top:40%;left:50%}
+.planet{position:fixed;pointer-events:none;z-index:0;border-radius:50%}
+.planet-1{width:380px;height:380px;background:radial-gradient(circle at 30% 30%,rgba(83,74,183,0.15),transparent 70%);top:-100px;right:-100px;border:0.5px solid rgba(83,74,183,0.1)}
+.planet-2{width:220px;height:220px;background:radial-gradient(circle at 40% 40%,rgba(29,158,117,0.12),transparent 70%);bottom:40px;left:-60px;border:0.5px solid rgba(29,158,117,0.08)}
+.wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:2rem 1.25rem 5rem}
+
+/* HEADER */
+.header{text-align:center;padding:2.5rem 0 2rem}
+.logo{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#185FA5);margin-bottom:1.1rem;font-size:36px;box-shadow:0 0 40px rgba(83,74,183,0.45),0 0 80px rgba(83,74,183,0.15)}
+h1{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;color:#fff;letter-spacing:0.05em;line-height:1.1;text-shadow:0 0 60px rgba(130,120,240,0.5)}
+h1 em{color:var(--teal);font-style:normal}
+.tagline{font-size:0.78rem;color:var(--muted);margin-top:0.7rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:600}
+
+/* CARDS */
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:2rem 1.75rem 1.75rem;backdrop-filter:blur(16px);margin-bottom:1.5rem}
+
+/* NAME SCREEN */
+.sec-label{font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.18em;color:var(--teal);text-transform:uppercase;margin-bottom:1.2rem}
+.field-label{font-size:0.82rem;color:var(--muted);font-weight:700;display:block;margin-bottom:0.5rem;letter-spacing:0.04em}
+.name-input{width:100%;padding:0.9rem 1.1rem;background:rgba(255,255,255,0.05);border:0.5px solid rgba(130,120,240,0.35);border-radius:12px;color:var(--text);font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:700;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.name-input:focus{border-color:rgba(83,74,183,0.8);box-shadow:0 0 0 3px rgba(83,74,183,0.12)}
+.name-input::placeholder{color:var(--hint)}
+.launch-btn{margin-top:1.1rem;width:100%;padding:1rem;background:linear-gradient(135deg,var(--purple),#185FA5);border:none;border-radius:12px;color:#fff;font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:opacity 0.2s,transform 0.15s,box-shadow 0.2s}
+.launch-btn:hover:not(:disabled){opacity:0.88;transform:translateY(-2px);box-shadow:0 8px 30px rgba(83,74,183,0.35)}
+.launch-btn:disabled{opacity:0.28;cursor:not-allowed;transform:none}
+
+/* QUIZ */
+.prog-wrap{margin-bottom:1.75rem}
+.prog-bar{height:3px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--teal));border-radius:3px;transition:width 0.55s cubic-bezier(.4,0,.2,1)}
+.prog-meta{display:flex;justify-content:space-between;margin-top:6px}
+.prog-meta span{font-size:0.7rem;font-family:'Orbitron',monospace;letter-spacing:0.1em;color:var(--hint)}
+.q-num{font-size:0.68rem;font-family:'Orbitron',monospace;letter-spacing:0.16em;color:var(--teal);margin-bottom:0.75rem;text-transform:uppercase}
+.q-text{font-size:1.18rem;color:var(--text);font-weight:700;line-height:1.55;margin-bottom:1.5rem}
+.options{display:flex;flex-direction:column;gap:0.55rem}
+.opt{background:rgba(255,255,255,0.035);border:0.5px solid rgba(130,120,240,0.22);border-radius:12px;padding:0.85rem 1.1rem;color:rgba(210,215,255,0.82);font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:600;text-align:left;cursor:pointer;transition:all 0.17s ease;display:flex;align-items:center;gap:0.8rem;width:100%}
+.opt:hover:not(:disabled){background:rgba(83,74,183,0.16);border-color:rgba(83,74,183,0.55);color:#fff;transform:translateX(5px)}
+.opt.correct{background:rgba(29,158,117,0.18);border-color:var(--teal);color:var(--teal-light);transform:none}
+.opt.wrong{background:rgba(226,75,74,0.14);border-color:var(--red);color:#F09595;transform:none}
+.opt.reveal{background:rgba(29,158,117,0.06);border-color:rgba(93,202,165,0.18);color:rgba(159,225,203,0.45);transform:none}
+.opt:disabled{cursor:default}
+.opt-l{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;min-width:28px;border-radius:7px;background:rgba(130,120,240,0.16);font-family:'Orbitron',monospace;font-size:0.62rem;color:#AFA9EC;font-weight:700}
+.opt.correct .opt-l{background:rgba(29,158,117,0.28);color:var(--teal)}
+.opt.wrong .opt-l{background:rgba(226,75,74,0.22);color:var(--red)}
+.feedback{margin-top:1.1rem;padding:0.9rem 1.1rem;border-radius:12px;font-size:0.88rem;line-height:1.55;font-weight:600;display:none}
+.feedback.show{display:block}
+.feedback.c{background:rgba(29,158,117,0.1);border:0.5px solid rgba(93,202,165,0.28);color:var(--teal-light)}
+.feedback.w{background:rgba(226,75,74,0.09);border:0.5px solid rgba(226,75,74,0.22);color:#F09595}
+.next-btn{margin-top:1.1rem;width:100%;padding:0.9rem;background:linear-gradient(135deg,var(--purple),#185FA5);border:none;border-radius:12px;color:#fff;font-family:'Orbitron',monospace;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:opacity 0.2s,transform 0.15s;display:none}
+.next-btn:hover{opacity:0.85;transform:translateY(-1px)}
+.next-btn.show{display:block}
+
+/* RESULTS */
+.tabs{display:flex;gap:0.5rem;margin-bottom:1.75rem}
+.tab{flex:1;padding:0.65rem;background:rgba(255,255,255,0.03);border:0.5px solid rgba(130,120,240,0.18);border-radius:10px;color:rgba(180,190,255,0.45);font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
+.tab.on{background:rgba(83,74,183,0.22);border-color:rgba(83,74,183,0.55);color:#AFA9EC}
+.view{display:none}.view.on{display:block}
+.score-hero{text-align:center;padding:0.75rem 0 1rem}
+.big-score{font-family:'Orbitron',monospace;font-size:4rem;font-weight:900;background:linear-gradient(135deg,#AFA9EC,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.score-denom{font-size:0.72rem;letter-spacing:0.15em;color:var(--hint);margin-top:5px;font-family:'Orbitron',monospace;text-transform:uppercase}
+.score-msg{font-size:1.1rem;color:var(--text);font-weight:700;margin:1.2rem 0 0.3rem}
+.score-sub{font-size:0.88rem;color:var(--muted)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;margin:1.4rem 0}
+.stat{background:rgba(255,255,255,0.04);border:0.5px solid rgba(130,120,240,0.18);border-radius:12px;padding:0.9rem;text-align:center}
+.stat-v{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:700;color:#AFA9EC}
+.stat-l{font-size:0.68rem;color:var(--hint);margin-top:4px;text-transform:uppercase;letter-spacing:0.1em}
+.view-lb-btn{width:100%;padding:0.72rem;background:rgba(83,74,183,0.2);border:0.5px solid rgba(83,74,183,0.45);border-radius:10px;color:#AFA9EC;font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;margin-bottom:0.75rem}
+.view-lb-btn:hover{background:rgba(83,74,183,0.35);color:#fff}
+.restart-btn{width:100%;padding:0.85rem;background:rgba(255,255,255,0.03);border:0.5px solid rgba(130,120,240,0.22);border-radius:12px;color:rgba(180,190,255,0.5);font-family:'Orbitron',monospace;font-size:0.72rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
+.restart-btn:hover{background:rgba(83,74,183,0.18);color:#fff}
+
+/* LEADERBOARD */
+.lb-row{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:0.75rem;padding:0.75rem 0.9rem;border-radius:12px;margin-bottom:0.45rem;background:rgba(255,255,255,0.025);border:0.5px solid rgba(130,120,240,0.12);transition:border-color 0.2s}
+.lb-row.me{border-color:rgba(93,202,165,0.42);background:rgba(29,158,117,0.07)}
+.lb-row.top1{border-color:rgba(239,159,39,0.35);background:rgba(239,159,39,0.05)}
+.lb-rank{font-family:'Orbitron',monospace;font-size:1rem;text-align:center}
+.lb-rank.r1{color:#EF9F27}.lb-rank.r2{color:#B4B2A9}.lb-rank.r3{color:#BA7517}
+.lb-rank.rn{font-size:0.78rem;color:var(--hint)}
+.lb-name{font-weight:700;font-size:0.95rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.you-tag{font-size:0.6rem;background:rgba(29,158,117,0.22);color:var(--teal);border-radius:4px;padding:2px 7px;margin-left:7px;vertical-align:middle;font-family:'Orbitron',monospace;letter-spacing:0.07em}
+.lb-right{text-align:right}
+.lb-score{font-family:'Orbitron',monospace;font-size:0.88rem;font-weight:700;color:#AFA9EC}
+.lb-pct{font-size:0.7rem;color:var(--hint);margin-top:1px}
+.lb-empty{text-align:center;color:var(--hint);font-size:0.85rem;padding:2rem 0}
+.lb-loading{text-align:center;color:var(--muted);font-size:0.85rem;padding:2rem 0;font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.1em;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
+.error-msg{background:rgba(226,75,74,0.1);border:0.5px solid rgba(226,75,74,0.25);border-radius:10px;padding:0.8rem 1rem;font-size:0.82rem;color:#F09595;margin-top:0.75rem;display:none}
+.error-msg.show{display:block}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="nebula nebula-1"></div>
+<div class="nebula nebula-2"></div>
+<div class="nebula nebula-3"></div>
+<div class="planet planet-1"></div>
+<div class="planet planet-2"></div>
+
+<div class="wrap">
+  <div class="header">
+    <div class="logo">🪐</div>
+    <h1>COSMOS<br><em>QUIZ</em></h1>
+    <p class="tagline">Test your universe knowledge</p>
+  </div>
+
+  <!-- SCREEN 1: Name -->
+  <div class="card" id="screen-name">
+    <div class="sec-label">Cadet Registration</div>
+    <label class="field-label" for="nameInp">Enter your name to begin your mission</label>
+    <input class="name-input" id="nameInp" type="text" placeholder="Your name..." maxlength="28" autocomplete="off"/>
+    <div class="error-msg" id="name-err">Please enter your name to continue.</div>
+    <button class="launch-btn" id="launchBtn" disabled>🚀 LAUNCH MISSION</button>
+  </div>
+
+  <!-- SCREEN 2: Quiz -->
+  <div id="screen-quiz" style="display:none">
+    <div class="card">
+      <div class="prog-wrap">
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+        <div class="prog-meta">
+          <span id="prog-q">Question 1 of 10</span>
+          <span id="prog-pct">0%</span>
+        </div>
+      </div>
+      <div class="q-num" id="q-num">Question 1</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn">NEXT QUESTION →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Results -->
+  <div id="screen-results" style="display:none">
+    <div class="card">
+      <div class="tabs">
+        <button class="tab on" id="tab-r" onclick="switchTab('r')">MY RESULTS</button>
+        <button class="tab" id="tab-lb" onclick="switchTab('lb')">🏆 LEADERBOARD</button>
+      </div>
+
+      <div class="view on" id="view-r">
+        <div class="score-hero">
+          <div class="big-score" id="big-score">0</div>
+          <div class="score-denom">out of 10 points</div>
+          <div class="score-msg" id="score-msg"></div>
+          <div class="score-sub" id="score-sub"></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-v" id="s-correct">0</div><div class="stat-l">Correct</div></div>
+          <div class="stat"><div class="stat-v" id="s-wrong">0</div><div class="stat-l">Incorrect</div></div>
+        </div>
+        <button class="view-lb-btn" onclick="switchTab('lb')">VIEW LEADERBOARD →</button>
+        <button class="restart-btn" onclick="restart()">↺ NEW MISSION</button>
+      </div>
+
+      <div class="view" id="view-lb">
+        <div id="lb-list"><div class="lb-loading">LOADING SCORES...</div></div>
+        <button class="restart-btn" style="margin-top:1rem" onclick="restart()">↺ NEW MISSION</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Supabase config ──────────────────────────────────────────
+const SUPA_URL = 'https://uerzvrwlismqdxlwuxkl.supabase.co';
+const SUPA_KEY = 'sb_publishable_0vnntWRJaunCP0pkKGu-eQ_YoGL6erE';
+const HEADERS  = {'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
+
+async function saveScore(name,score,total){
+  const pct = Math.round(score/total*100);
+  await fetch(SUPA_URL+'/rest/v1/scores',{
+    method:'POST',
+    headers:{...HEADERS,'Prefer':'return=minimal'},
+    body:JSON.stringify({name,score,total,pct})
+  });
+}
+
+async function fetchScores(){
+  const r = await fetch(SUPA_URL+'/rest/v1/scores?select=name,score,total,pct,created_at&order=pct.desc,score.desc,created_at.asc&limit=50',{headers:HEADERS});
+  return r.json();
+}
+
+// ── Questions ────────────────────────────────────────────────
+const QS=[
+  {q:"What is the largest planet in our solar system?",opts:["Saturn","Jupiter","Neptune","Uranus"],ans:1,exp:"Jupiter is so massive that all other planets could fit inside it with room to spare!"},
+  {q:"How long does light from the Sun take to reach Earth?",opts:["8 minutes","3 minutes","23 minutes","45 seconds"],ans:0,exp:"Sunlight travels 150 million km at 299,792 km/s, arriving in about 8 minutes and 20 seconds."},
+  {q:"What is a light-year?",opts:["Time to orbit the Sun","Distance light travels in one year","The age of a star","The brightness of a star"],ans:1,exp:"A light-year is a distance — about 9.46 trillion kilometres — not a unit of time!"},
+  {q:"Which planet is known as the Red Planet?",opts:["Venus","Mercury","Mars","Jupiter"],ans:2,exp:"Mars gets its reddish colour from iron oxide (rust) coating its surface and dust in the atmosphere."},
+  {q:"What is the name of our galaxy?",opts:["Andromeda","Triangulum","The Milky Way","Sombrero Galaxy"],ans:2,exp:"Our home galaxy is the Milky Way — a barred spiral galaxy containing over 200 billion stars."},
+  {q:"What causes a solar eclipse?",opts:["Earth passes between Sun and Moon","Moon passes between Sun and Earth","Sun passes behind a cloud","Earth's shadow falls on Mars"],ans:1,exp:"A solar eclipse occurs when the Moon aligns perfectly between Earth and the Sun, blocking sunlight."},
+  {q:"How many moons does Mars have?",opts:["0","1","2","4"],ans:2,exp:"Mars has two small moons: Phobos and Deimos, named after Greek gods of fear and dread."},
+  {q:"What is the hottest planet in our solar system?",opts:["Mercury","Venus","Earth","Mars"],ans:1,exp:"Venus is hotter than Mercury due to its thick CO₂ atmosphere trapping heat in a runaway greenhouse effect."},
+  {q:"What type of star is our Sun?",opts:["Red giant","White dwarf","Yellow dwarf","Neutron star"],ans:2,exp:"The Sun is a G-type main-sequence star — middle-aged, mid-sized, and about 4.6 billion years old."},
+  {q:"Approximately how old is the universe?",opts:["4.5 billion years","13.8 billion years","100 million years","1 trillion years"],ans:1,exp:"The universe is estimated to be about 13.8 billion years old, dating back to the Big Bang."},
+];
+const LETTERS=['A','B','C','D'];
+
+// ── State ────────────────────────────────────────────────────
+let idx=0,score=0,correct=0,wrong=0,answered=false,playerName='',myEntryTs=null;
+
+// ── Stars ────────────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<140;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2.4+0.4;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${1.5+Math.random()*3.5}s;--min:${0.08+Math.random()*0.25};animation-delay:${Math.random()*4}s`;
+    c.appendChild(s);
+  }
+})();
+
+// ── Name screen ──────────────────────────────────────────────
+const nameInp=document.getElementById('nameInp');
+const launchBtn=document.getElementById('launchBtn');
+nameInp.addEventListener('input',()=>{ launchBtn.disabled=nameInp.value.trim().length<2; });
+nameInp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&nameInp.value.trim().length>=2) startQuiz(); });
+launchBtn.addEventListener('click',startQuiz);
+
+function startQuiz(){
+  const n=nameInp.value.trim();
+  if(!n||n.length<2) return;
+  playerName=n;
+  document.getElementById('screen-name').style.display='none';
+  document.getElementById('screen-quiz').style.display='block';
+  render();
+}
+
+// ── Quiz ─────────────────────────────────────────────────────
+function render(){
+  if(idx>=QS.length){ finishQuiz(); return; }
+  const q=QS[idx];
+  const pct=Math.round(idx/QS.length*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-q').textContent=`Question ${idx+1} of ${QS.length}`;
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('q-num').textContent=`Question ${idx+1} of ${QS.length}`;
+  document.getElementById('q-text').textContent=q.q;
+  const fb=document.getElementById('feedback');
+  fb.className='feedback'; fb.textContent='';
+  document.getElementById('next-btn').className='next-btn';
+  answered=false;
+  const opts=document.getElementById('options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML=`<span class="opt-l">${LETTERS[i]}</span>${o}`;
+    b.onclick=()=>choose(i);
+    opts.appendChild(b);
+  });
+}
+
+function choose(i){
+  if(answered) return;
+  answered=true;
+  const q=QS[idx];
+  document.querySelectorAll('.opt').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===q.ans) b.className='opt correct';
+    else if(j===i) b.className='opt wrong';
+    else b.className='opt reveal';
+  });
+  const fb=document.getElementById('feedback');
+  if(i===q.ans){ score++; correct++; fb.className='feedback c show'; fb.textContent='✓ Correct!  '+q.exp; }
+  else{ wrong++; fb.className='feedback w show'; fb.textContent='✗ Not quite.  '+q.exp; }
+  document.getElementById('next-btn').className='next-btn show';
+}
+document.getElementById('next-btn').onclick=()=>{ idx++; render(); };
+
+// ── Finish ───────────────────────────────────────────────────
+async function finishQuiz(){
+  myEntryTs=Date.now();
+  document.getElementById('screen-quiz').style.display='none';
+  document.getElementById('screen-results').style.display='block';
+  document.getElementById('big-score').textContent=score;
+  document.getElementById('s-correct').textContent=correct;
+  document.getElementById('s-wrong').textContent=wrong;
+  const pct=Math.round(score/QS.length*100);
+  let msg,sub;
+  if(pct===100){msg='🌟 Perfect score! Cosmic genius!';sub='The universe holds no secrets from you.';}
+  else if(pct>=80){msg='🚀 Outstanding astronomer!';sub='You really know your way around the cosmos.';}
+  else if(pct>=60){msg='🌙 Solid space knowledge!';sub='A few more star-gazing sessions and you\'ll nail it.';}
+  else if(pct>=40){msg='☄️ The journey begins!';sub='Keep exploring — the universe rewards the curious.';}
+  else{msg='🛸 Houston, we have a problem…';sub='Don\'t worry — every astronaut starts somewhere!';}
+  document.getElementById('score-msg').textContent=msg;
+  document.getElementById('score-sub').textContent=sub;
+  try{ await saveScore(playerName,score,QS.length); }catch(e){ console.warn('Save failed',e); }
+  loadLeaderboard();
+}
+
+// ── Leaderboard ──────────────────────────────────────────────
+async function loadLeaderboard(){
+  const el=document.getElementById('lb-list');
+  el.innerHTML='<div class="lb-loading">LOADING SCORES...</div>';
+  try{
+    const data=await fetchScores();
+    if(!data||!data.length){ el.innerHTML='<div class="lb-empty">No scores yet — be the first!</div>'; return; }
+    const medals=['🥇','🥈','🥉'];
+    const rankCls=['r1','r2','r3'];
+    // find my row: match name + score, pick most recent
+    let myIdx=-1;
+    data.forEach((e,i)=>{ if(e.name===playerName&&e.score===score&&myIdx===-1) myIdx=i; });
+    el.innerHTML=data.map((e,i)=>{
+      const isMe=i===myIdx;
+      const medal=i<3?`<span class="lb-rank">${medals[i]}</span>`:`<span class="lb-rank rn ${rankCls[i]||''}">${i+1}</span>`;
+      return `<div class="lb-row${isMe?' me':''}${i===0?' top1':''}">
+        ${medal}
+        <div class="lb-name">${esc(e.name)}${isMe?'<span class="you-tag">YOU</span>':''}</div>
+        <div class="lb-right"><div class="lb-score">${e.score}/${e.total}</div><div class="lb-pct">${e.pct}%</div></div>
+      </div>`;
+    }).join('');
+  }catch(err){
+    el.innerHTML='<div class="lb-empty">Could not load scores. Check your connection.</div>';
+  }
+}
+
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// ── Tabs ─────────────────────────────────────────────────────
+function switchTab(t){
+  document.getElementById('tab-r').className='tab'+(t==='r'?' on':'');
+  document.getElementById('tab-lb').className='tab'+(t==='lb'?' on':'');
+  document.getElementById('view-r').className='view'+(t==='r'?' on':'');
+  document.getElementById('view-lb').className='view'+(t==='lb'?' on':'');
+  if(t==='lb') loadLeaderboard();
+}
+
+// ── Restart ──────────────────────────────────────────────────
+function restart(){
+  idx=0; score=0; correct=0; wrong=0; answered=false; playerName=''; myEntryTs=null;
+  nameInp.value=''; launchBtn.disabled=true;
+  document.getElementById('screen-results').style.display='none';
+  document.getElementById('screen-name').style.display='block';
+  switchTab('r');
+}
+</script>
+</body>
+</html>
