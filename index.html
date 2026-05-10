@@ -33,27 +33,52 @@ h1 em{color:var(--teal);font-style:normal}
 .card{background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:2rem 1.75rem 1.75rem;backdrop-filter:blur(16px);margin-bottom:1.5rem}
 .sec-label{font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.18em;color:var(--teal);text-transform:uppercase;margin-bottom:1.2rem}
 .field-label{font-size:0.82rem;color:var(--muted);font-weight:700;display:block;margin-bottom:0.5rem;letter-spacing:0.04em}
-.name-input{width:100%;padding:0.9rem 1.1rem;background:rgba(255,255,255,0.05);border:0.5px solid rgba(130,120,240,0.35);border-radius:12px;color:var(--text);font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:700;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
-.name-input:focus{border-color:rgba(83,74,183,0.8);box-shadow:0 0 0 3px rgba(83,74,183,0.12)}
-.name-input::placeholder{color:var(--hint)}
-.launch-btn{margin-top:1.1rem;width:100%;padding:1rem;background:linear-gradient(135deg,var(--purple),#185FA5);border:none;border-radius:12px;color:#fff;font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:opacity 0.2s,transform 0.15s}
-.launch-btn:hover:not(:disabled){opacity:0.88;transform:translateY(-2px)}
-.launch-btn:disabled{opacity:0.28;cursor:not-allowed;transform:none}
+.input{width:100%;padding:0.9rem 1.1rem;background:rgba(255,255,255,0.05);border:0.5px solid rgba(130,120,240,0.35);border-radius:12px;color:var(--text);font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:700;outline:none;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:0.85rem}
+.input:focus{border-color:rgba(83,74,183,0.8);box-shadow:0 0 0 3px rgba(83,74,183,0.12)}
+.input::placeholder{color:var(--hint)}
+.input.code-input{font-family:'Orbitron',monospace;font-size:1.4rem;letter-spacing:0.25em;text-align:center;text-transform:uppercase}
+.btn{width:100%;padding:1rem;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:opacity 0.2s,transform 0.15s,box-shadow 0.2s;margin-top:0.3rem}
+.btn:hover:not(:disabled){opacity:0.88;transform:translateY(-2px)}
+.btn:disabled{opacity:0.28;cursor:not-allowed;transform:none}
+.btn-primary{background:linear-gradient(135deg,var(--purple),#185FA5);color:#fff}
+.btn-secondary{background:rgba(255,255,255,0.04);border:0.5px solid var(--border);color:var(--muted)}
+.btn-teal{background:linear-gradient(135deg,#1D9E75,#185FA5);color:#fff}
+.divider{display:flex;align-items:center;gap:1rem;margin:1.2rem 0;color:var(--hint);font-size:0.75rem;letter-spacing:0.1em;font-family:'Orbitron',monospace}
+.divider::before,.divider::after{content:'';flex:1;height:0.5px;background:rgba(130,120,240,0.2)}
+
+/* SESSION CODE DISPLAY */
+.code-display{background:rgba(83,74,183,0.12);border:0.5px solid rgba(83,74,183,0.4);border-radius:16px;padding:1.5rem;text-align:center;margin:1.2rem 0}
+.code-big{font-family:'Orbitron',monospace;font-size:2.8rem;font-weight:900;letter-spacing:0.3em;color:#fff;text-shadow:0 0 30px rgba(83,74,183,0.6)}
+.code-label{font-size:0.68rem;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;font-family:'Orbitron',monospace;margin-bottom:0.5rem}
+.code-hint{font-size:0.78rem;color:var(--hint);margin-top:0.6rem}
+.copy-btn{margin-top:0.75rem;padding:0.5rem 1.2rem;background:rgba(83,74,183,0.2);border:0.5px solid rgba(83,74,183,0.4);border-radius:8px;color:#AFA9EC;font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
+.copy-btn:hover{background:rgba(83,74,183,0.35);color:#fff}
+
+/* SESSION BADGE */
+.session-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(83,74,183,0.15);border:0.5px solid rgba(83,74,183,0.35);border-radius:8px;padding:0.4rem 0.85rem;font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;color:#AFA9EC;margin-bottom:1.2rem}
+
+/* LIVE HUD */
 .live-hud{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;gap:1rem}
 .hud-score{font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.1em;color:var(--muted)}
 .hud-score span{font-size:1.1rem;font-weight:700;color:#AFA9EC}
 .hud-streak{font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--amber);display:flex;align-items:center;gap:4px;min-width:60px;justify-content:flex-end;transition:opacity 0.3s}
+
+/* TIMER */
 .timer-wrap{margin-bottom:1.4rem}
 .timer-bar-bg{height:6px;background:rgba(255,255,255,0.07);border-radius:6px;overflow:hidden}
 .timer-bar-fill{height:100%;border-radius:6px;transition:width 0.1s linear,background-color 0.4s}
 .timer-meta{display:flex;justify-content:space-between;margin-top:5px}
 .timer-secs{font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;transition:color 0.4s}
 .pts-hint{font-size:0.68rem;color:var(--hint);font-family:'Orbitron',monospace;letter-spacing:0.08em}
+
+/* PROGRESS */
 .prog-wrap{margin-bottom:1rem}
 .prog-bar{height:3px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--teal));border-radius:3px;transition:width 0.55s cubic-bezier(.4,0,.2,1)}
 .prog-meta{display:flex;justify-content:space-between;margin-top:5px}
 .prog-meta span{font-size:0.68rem;font-family:'Orbitron',monospace;letter-spacing:0.1em;color:var(--hint)}
+
+/* QUESTION */
 .q-num{font-size:0.68rem;font-family:'Orbitron',monospace;letter-spacing:0.16em;color:var(--teal);margin-bottom:0.75rem;text-transform:uppercase}
 .q-text{font-size:1.15rem;color:var(--text);font-weight:700;line-height:1.55;margin-bottom:1.4rem}
 .options{display:flex;flex-direction:column;gap:0.55rem}
@@ -67,9 +92,12 @@ h1 em{color:var(--teal);font-style:normal}
 .opt-l{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;min-width:28px;border-radius:7px;background:rgba(130,120,240,0.16);font-family:'Orbitron',monospace;font-size:0.62rem;color:#AFA9EC;font-weight:700}
 .opt.correct .opt-l{background:rgba(29,158,117,0.28);color:var(--teal)}
 .opt.wrong .opt-l{background:rgba(226,75,74,0.22);color:var(--red)}
+
+/* POINTS POPUP */
 .pts-popup{position:fixed;font-family:'Orbitron',monospace;font-weight:900;font-size:1.6rem;pointer-events:none;z-index:100;opacity:0;color:#9FE1CB}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-40px) scale(1.1)}100%{opacity:0;transform:translateY(-80px) scale(0.9)}}
 .pts-popup.go{animation:floatUp 0.9s ease-out forwards}
+
 .feedback{margin-top:1rem;padding:0.85rem 1.1rem;border-radius:12px;font-size:0.87rem;line-height:1.5;font-weight:600;display:none}
 .feedback.show{display:block}
 .feedback.c{background:rgba(29,158,117,0.1);border:0.5px solid rgba(93,202,165,0.28);color:var(--teal-light)}
@@ -78,6 +106,8 @@ h1 em{color:var(--teal);font-style:normal}
 .next-btn{margin-top:1rem;width:100%;padding:0.9rem;background:linear-gradient(135deg,var(--purple),#185FA5);border:none;border-radius:12px;color:#fff;font-family:'Orbitron',monospace;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:opacity 0.2s,transform 0.15s;display:none}
 .next-btn:hover{opacity:0.85;transform:translateY(-1px)}
 .next-btn.show{display:block}
+
+/* RESULTS */
 .tabs{display:flex;gap:0.5rem;margin-bottom:1.75rem}
 .tab{flex:1;padding:0.65rem;background:rgba(255,255,255,0.03);border:0.5px solid rgba(130,120,240,0.18);border-radius:10px;color:rgba(180,190,255,0.45);font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
 .tab.on{background:rgba(83,74,183,0.22);border-color:rgba(83,74,183,0.55);color:#AFA9EC}
@@ -95,6 +125,9 @@ h1 em{color:var(--teal);font-style:normal}
 .view-lb-btn:hover{background:rgba(83,74,183,0.35);color:#fff}
 .restart-btn{width:100%;padding:0.85rem;background:rgba(255,255,255,0.03);border:0.5px solid rgba(130,120,240,0.22);border-radius:12px;color:rgba(180,190,255,0.5);font-family:'Orbitron',monospace;font-size:0.72rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
 .restart-btn:hover{background:rgba(83,74,183,0.18);color:#fff}
+
+/* LEADERBOARD */
+.lb-session-tag{font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.15em;color:var(--teal);margin-bottom:1rem;text-align:center}
 .lb-row{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:0.75rem;padding:0.75rem 0.9rem;border-radius:12px;margin-bottom:0.45rem;background:rgba(255,255,255,0.025);border:0.5px solid rgba(130,120,240,0.12)}
 .lb-row.me{border-color:rgba(93,202,165,0.42);background:rgba(29,158,117,0.07)}
 .lb-row.top1{border-color:rgba(239,159,39,0.35);background:rgba(239,159,39,0.05)}
@@ -109,6 +142,8 @@ h1 em{color:var(--teal);font-style:normal}
 .lb-empty{text-align:center;color:var(--hint);font-size:0.85rem;padding:2rem 0}
 .lb-loading{text-align:center;color:var(--muted);padding:2rem 0;font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.1em;animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
+.err-box{background:rgba(226,75,74,0.09);border:0.5px solid rgba(226,75,74,0.3);border-radius:10px;padding:0.8rem 1rem;font-size:0.85rem;color:#F09595;margin-top:0.75rem;display:none}
+.err-box.show{display:block}
 </style>
 </head>
 <body>
@@ -122,20 +157,56 @@ h1 em{color:var(--teal);font-style:normal}
   <div class="header">
     <div class="logo">🪐</div>
     <h1>COSMOS<br><em>QUIZ</em></h1>
-    <p class="tagline">Answer fast — score higher</p>
+    <p class="tagline" id="main-tagline">Host a session or join one</p>
   </div>
 
-  <!-- Name screen -->
-  <div class="card" id="screen-name">
-    <div class="sec-label">Cadet Registration</div>
-    <label class="field-label" for="nameInp">Enter your name to begin your mission</label>
-    <input class="name-input" id="nameInp" type="text" placeholder="Your name..." maxlength="28" autocomplete="off"/>
-    <button class="launch-btn" id="launchBtn" disabled>🚀 LAUNCH MISSION</button>
+  <!-- SCREEN: Home -->
+  <div class="card" id="screen-home">
+    <div class="sec-label">Mission Control</div>
+    <button class="btn btn-primary" onclick="showScreen('screen-host')">🚀 HOST A SESSION</button>
+    <div class="divider">OR</div>
+    <button class="btn btn-teal" onclick="showScreen('screen-join')">🎮 JOIN WITH CODE</button>
   </div>
 
-  <!-- Quiz screen -->
+  <!-- SCREEN: Host -->
+  <div class="card" id="screen-host" style="display:none">
+    <div class="sec-label">Host Setup</div>
+    <label class="field-label">Your name</label>
+    <input class="input" id="hostName" type="text" placeholder="Your name..." maxlength="28" autocomplete="off"/>
+    <button class="btn btn-primary" id="createBtn" onclick="createSession()" disabled>✦ CREATE SESSION</button>
+    <div class="err-box" id="host-err"></div>
+    <button class="btn btn-secondary" style="margin-top:0.5rem" onclick="showScreen('screen-home')">← BACK</button>
+  </div>
+
+  <!-- SCREEN: Session Created -->
+  <div class="card" id="screen-created" style="display:none">
+    <div class="sec-label">Session Ready</div>
+    <div class="code-display">
+      <div class="code-label">Share this code with players</div>
+      <div class="code-big" id="display-code">------</div>
+      <div class="code-hint">Players go to the quiz site and enter this code</div>
+      <button class="copy-btn" onclick="copyCode()">📋 COPY CODE</button>
+    </div>
+    <button class="btn btn-primary" onclick="hostStartQuiz()">▶ START PLAYING</button>
+    <button class="btn btn-secondary" style="margin-top:0.5rem" onclick="showScreen('screen-home')">← BACK TO HOME</button>
+  </div>
+
+  <!-- SCREEN: Join -->
+  <div class="card" id="screen-join" style="display:none">
+    <div class="sec-label">Join Session</div>
+    <label class="field-label">Your name</label>
+    <input class="input" id="joinName" type="text" placeholder="Your name..." maxlength="28" autocomplete="off"/>
+    <label class="field-label">Session code</label>
+    <input class="input code-input" id="joinCode" type="text" placeholder="ABC123" maxlength="6" autocomplete="off"/>
+    <button class="btn btn-teal" id="joinBtn" onclick="joinSession()" disabled>🎮 JOIN SESSION</button>
+    <div class="err-box" id="join-err"></div>
+    <button class="btn btn-secondary" style="margin-top:0.5rem" onclick="showScreen('screen-home')">← BACK</button>
+  </div>
+
+  <!-- SCREEN: Quiz -->
   <div id="screen-quiz" style="display:none">
     <div class="card">
+      <div class="session-badge" id="quiz-session-badge">🪐 SESSION: ------</div>
       <div class="live-hud">
         <div class="hud-score">SCORE <span id="live-score">0</span></div>
         <div class="hud-streak" id="streak-hud" style="opacity:0">🔥 <span id="streak-count">0</span> STREAK</div>
@@ -143,7 +214,7 @@ h1 em{color:var(--teal);font-style:normal}
       <div class="timer-wrap">
         <div class="timer-bar-bg"><div class="timer-bar-fill" id="timer-fill" style="width:100%;background:var(--teal)"></div></div>
         <div class="timer-meta">
-          <div class="timer-secs" id="timer-secs" style="color:var(--teal)">15s</div>
+          <div class="timer-secs" id="timer-secs" style="color:var(--teal)">45s</div>
           <div class="pts-hint" id="pts-hint">UP TO +100 PTS</div>
         </div>
       </div>
@@ -162,7 +233,7 @@ h1 em{color:var(--teal);font-style:normal}
     </div>
   </div>
 
-  <!-- Results screen -->
+  <!-- SCREEN: Results -->
   <div id="screen-results" style="display:none">
     <div class="card">
       <div class="tabs">
@@ -181,12 +252,13 @@ h1 em{color:var(--teal);font-style:normal}
           <div class="stat"><div class="stat-v" id="s-wrong">0</div><div class="stat-l">Incorrect</div></div>
           <div class="stat"><div class="stat-v" id="s-timeouts">0</div><div class="stat-l">Timed Out</div></div>
         </div>
-        <button class="view-lb-btn" onclick="switchTab('lb')">VIEW LEADERBOARD →</button>
-        <button class="restart-btn" onclick="restart()">↺ NEW MISSION</button>
+        <button class="view-lb-btn" onclick="switchTab('lb')">VIEW SESSION LEADERBOARD →</button>
+        <button class="restart-btn" onclick="goHome()">↺ BACK TO HOME</button>
       </div>
       <div class="view" id="view-lb">
+        <div class="lb-session-tag" id="lb-session-tag">SESSION: ------</div>
         <div id="lb-list"><div class="lb-loading">LOADING SCORES...</div></div>
-        <button class="restart-btn" style="margin-top:1rem" onclick="restart()">↺ NEW MISSION</button>
+        <button class="restart-btn" style="margin-top:1rem" onclick="goHome()">↺ BACK TO HOME</button>
       </div>
     </div>
   </div>
@@ -198,21 +270,38 @@ h1 em{color:var(--teal);font-style:normal}
 const SUPA_URL='https://uerzvrwlismqdxlwuxkl.supabase.co';
 const SUPA_KEY='sb_publishable_0vnntWRJaunCP0pkKGu-eQ_YoGL6erE';
 const HEADERS={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
-const TIME_PER_Q=15;
+const TIME_PER_Q=45;
 const MAX_PTS=100;
 
-async function saveScore(name,totalPts,correct,timeouts){
-  await fetch(SUPA_URL+'/rest/v1/scores',{
-    method:'POST',
-    headers:{...HEADERS,'Prefer':'return=minimal'},
-    body:JSON.stringify({name,score:totalPts,total:QS.length*MAX_PTS,pct:Math.round(totalPts/(QS.length*MAX_PTS)*100),correct,timeouts})
-  });
+// ── Supabase ─────────────────────────────────────────────────
+async function apiPost(path,body){
+  const r=await fetch(SUPA_URL+path,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(body)});
+  return r.json();
 }
-async function fetchScores(){
-  const r=await fetch(SUPA_URL+'/rest/v1/scores?select=name,score,correct,timeouts,created_at&order=score.desc,created_at.asc&limit=50',{headers:HEADERS});
+async function apiGet(path){
+  const r=await fetch(SUPA_URL+path,{headers:HEADERS});
   return r.json();
 }
 
+async function createSessionInDB(hostName,code){
+  return apiPost('/rest/v1/sessions',{host_name:hostName,code});
+}
+async function checkSessionExists(code){
+  const data=await apiGet('/rest/v1/sessions?code=eq.'+code+'&select=code');
+  return Array.isArray(data)&&data.length>0;
+}
+async function saveScore(name,sessionCode,totalPts,correct,timeouts){
+  await fetch(SUPA_URL+'/rest/v1/scores',{
+    method:'POST',
+    headers:{...HEADERS,'Prefer':'return=minimal'},
+    body:JSON.stringify({name,session_code:sessionCode,score:totalPts,total:QS.length*MAX_PTS,pct:Math.round(totalPts/(QS.length*MAX_PTS)*100),correct,timeouts})
+  });
+}
+async function fetchScores(sessionCode){
+  return apiGet('/rest/v1/scores?session_code=eq.'+sessionCode+'&select=name,score,correct,timeouts,created_at&order=score.desc,created_at.asc&limit=50');
+}
+
+// ── Questions ────────────────────────────────────────────────
 const QS=[
   {q:"What is the largest planet in our solar system?",opts:["Saturn","Jupiter","Neptune","Uranus"],ans:1,exp:"Jupiter is so massive all other planets could fit inside it!"},
   {q:"How long does light from the Sun take to reach Earth?",opts:["8 minutes","3 minutes","23 minutes","45 seconds"],ans:0,exp:"Sunlight travels 150 million km, arriving in about 8 minutes 20 seconds."},
@@ -227,10 +316,12 @@ const QS=[
 ];
 const LETTERS=['A','B','C','D'];
 
+// ── State ────────────────────────────────────────────────────
 let idx=0,totalPts=0,correct=0,wrong=0,timeouts=0;
-let answered=false,playerName='',streak=0;
+let answered=false,playerName='',sessionCode='',streak=0;
 let timerInterval=null,timeLeft=TIME_PER_Q,qStartTime=0;
 
+// ── Stars ────────────────────────────────────────────────────
 (function(){
   const c=document.getElementById('stars');
   for(let i=0;i<140;i++){
@@ -241,29 +332,99 @@ let timerInterval=null,timeLeft=TIME_PER_Q,qStartTime=0;
   }
 })();
 
-const nameInp=document.getElementById('nameInp');
-const launchBtn=document.getElementById('launchBtn');
-nameInp.addEventListener('input',()=>{launchBtn.disabled=nameInp.value.trim().length<2;});
-nameInp.addEventListener('keydown',e=>{if(e.key==='Enter'&&nameInp.value.trim().length>=2)startQuiz();});
-launchBtn.addEventListener('click',startQuiz);
+// ── Screen nav ───────────────────────────────────────────────
+function showScreen(id){
+  ['screen-home','screen-host','screen-created','screen-join','screen-quiz','screen-results'].forEach(s=>{
+    const el=document.getElementById(s);
+    if(el) el.style.display=s===id?'block':'none';
+  });
+}
 
-function startQuiz(){
-  const n=nameInp.value.trim();
-  if(!n||n.length<2)return;
-  playerName=n;
-  document.getElementById('screen-name').style.display='none';
-  document.getElementById('screen-quiz').style.display='block';
+// ── Code gen ─────────────────────────────────────────────────
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+// ── Host flow ─────────────────────────────────────────────────
+const hostNameInp=document.getElementById('hostName');
+const createBtn=document.getElementById('createBtn');
+hostNameInp.addEventListener('input',()=>{createBtn.disabled=hostNameInp.value.trim().length<2;});
+hostNameInp.addEventListener('keydown',e=>{if(e.key==='Enter'&&hostNameInp.value.trim().length>=2)createSession();});
+
+async function createSession(){
+  const name=hostNameInp.value.trim();
+  if(!name||name.length<2)return;
+  createBtn.disabled=true;
+  createBtn.textContent='CREATING...';
+  const code=genCode();
+  try{
+    await createSessionInDB(name,code);
+    sessionCode=code;
+    playerName=name;
+    document.getElementById('display-code').textContent=code;
+    showScreen('screen-created');
+  }catch(e){
+    showErr('host-err','Could not create session. Try again.');
+  }
+  createBtn.disabled=false;
+  createBtn.textContent='✦ CREATE SESSION';
+}
+
+function copyCode(){
+  navigator.clipboard.writeText(sessionCode).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.textContent='✓ COPIED!';
+    setTimeout(()=>btn.textContent='📋 COPY CODE',2000);
+  });
+}
+
+function hostStartQuiz(){
+  startQuiz(playerName,sessionCode);
+}
+
+// ── Join flow ─────────────────────────────────────────────────
+const joinNameInp=document.getElementById('joinName');
+const joinCodeInp=document.getElementById('joinCode');
+const joinBtn=document.getElementById('joinBtn');
+
+function checkJoinReady(){joinBtn.disabled=joinNameInp.value.trim().length<2||joinCodeInp.value.trim().length<6;}
+joinNameInp.addEventListener('input',checkJoinReady);
+joinCodeInp.addEventListener('input',()=>{joinCodeInp.value=joinCodeInp.value.toUpperCase();checkJoinReady();});
+
+async function joinSession(){
+  const name=joinNameInp.value.trim();
+  const code=joinCodeInp.value.trim().toUpperCase();
+  if(!name||!code||code.length!==6)return;
+  joinBtn.disabled=true;
+  joinBtn.textContent='CHECKING...';
+  try{
+    const exists=await checkSessionExists(code);
+    if(!exists){showErr('join-err','Session not found. Check the code and try again.');joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';return;}
+    startQuiz(name,code);
+  }catch(e){
+    showErr('join-err','Could not connect. Check your internet and try again.');
+  }
+  joinBtn.disabled=false;
+  joinBtn.textContent='🎮 JOIN SESSION';
+}
+
+// ── Quiz ──────────────────────────────────────────────────────
+function startQuiz(name,code){
+  playerName=name; sessionCode=code;
+  idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;streak=0;
+  document.getElementById('quiz-session-badge').textContent='🪐 SESSION: '+code;
+  document.getElementById('live-score').textContent='0';
+  document.getElementById('streak-hud').style.opacity='0';
+  showScreen('screen-quiz');
   render();
 }
 
-function calcPoints(secsLeft){
-  return Math.round(10+(secsLeft/TIME_PER_Q)*90);
-}
+function calcPoints(secsLeft){return Math.round(10+(secsLeft/TIME_PER_Q)*90);}
 
 function startTimer(){
   clearInterval(timerInterval);
-  timeLeft=TIME_PER_Q;
-  qStartTime=Date.now();
+  timeLeft=TIME_PER_Q; qStartTime=Date.now();
   updateTimerUI();
   timerInterval=setInterval(()=>{
     timeLeft=Math.max(0,TIME_PER_Q-(Date.now()-qStartTime)/1000);
@@ -276,9 +437,8 @@ function updateTimerUI(){
   const pct=(timeLeft/TIME_PER_Q)*100;
   const fill=document.getElementById('timer-fill');
   const secs=document.getElementById('timer-secs');
-  const hint=document.getElementById('pts-hint');
   fill.style.width=pct+'%';
-  hint.textContent='UP TO +'+calcPoints(timeLeft)+' PTS';
+  document.getElementById('pts-hint').textContent='UP TO +'+calcPoints(timeLeft)+' PTS';
   secs.textContent=Math.ceil(timeLeft)+'s';
   if(pct>50){fill.style.background='var(--teal)';secs.style.color='var(--teal)';}
   else if(pct>25){fill.style.background='var(--amber)';secs.style.color='var(--amber)';}
@@ -289,13 +449,9 @@ function stopTimer(){clearInterval(timerInterval);}
 
 function onTimeout(){
   if(answered)return;
-  answered=true;timeouts++;streak=0;
-  updateStreakHud();
+  answered=true;timeouts++;streak=0;updateStreakHud();
   const q=QS[idx];
-  document.querySelectorAll('.opt').forEach((b,j)=>{
-    b.disabled=true;
-    b.className=j===q.ans?'opt correct':'opt timeout';
-  });
+  document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;b.className=j===q.ans?'opt correct':'opt timeout';});
   const fb=document.getElementById('feedback');
   fb.className='feedback t show';
   fb.textContent='⏰ Time\'s up! '+q.exp;
@@ -311,26 +467,21 @@ function render(){
   document.getElementById('prog-pct').textContent=pct+'%';
   document.getElementById('q-num').textContent='Question '+(idx+1)+' of '+QS.length;
   document.getElementById('q-text').textContent=q.q;
-  const fb=document.getElementById('feedback');
-  fb.className='feedback';fb.textContent='';
+  const fb=document.getElementById('feedback');fb.className='feedback';fb.textContent='';
   document.getElementById('next-btn').className='next-btn';
   answered=false;
-  const opts=document.getElementById('options');
-  opts.innerHTML='';
+  const opts=document.getElementById('options');opts.innerHTML='';
   q.opts.forEach((o,i)=>{
-    const b=document.createElement('button');
-    b.className='opt';
+    const b=document.createElement('button');b.className='opt';
     b.innerHTML='<span class="opt-l">'+LETTERS[i]+'</span>'+o;
-    b.onclick=()=>choose(i);
-    opts.appendChild(b);
+    b.onclick=()=>choose(i);opts.appendChild(b);
   });
   startTimer();
 }
 
 function choose(i){
   if(answered)return;
-  answered=true;
-  stopTimer();
+  answered=true;stopTimer();
   const q=QS[idx];
   const secsLeft=Math.max(0,TIME_PER_Q-(Date.now()-qStartTime)/1000);
   document.querySelectorAll('.opt').forEach((b,j)=>{
@@ -342,61 +493,48 @@ function choose(i){
   const fb=document.getElementById('feedback');
   if(i===q.ans){
     correct++;streak++;
-    const pts=calcPoints(secsLeft);
-    totalPts+=pts;
+    const pts=calcPoints(secsLeft);totalPts+=pts;
     showPtsPopup('+'+pts);
     document.getElementById('live-score').textContent=totalPts;
     fb.className='feedback c show';
     fb.textContent='✓ Correct! +'+pts+' pts  '+q.exp;
-  }else{
-    wrong++;streak=0;
-    fb.className='feedback w show';
-    fb.textContent='✗ Not quite.  '+q.exp;
-  }
+  }else{wrong++;streak=0;fb.className='feedback w show';fb.textContent='✗ Not quite.  '+q.exp;}
   updateStreakHud();
   document.getElementById('next-btn').className='next-btn show';
 }
 
 function updateStreakHud(){
-  const hud=document.getElementById('streak-hud');
   document.getElementById('streak-count').textContent=streak;
-  hud.style.opacity=streak>=2?'1':'0';
+  document.getElementById('streak-hud').style.opacity=streak>=2?'1':'0';
 }
 
 function showPtsPopup(text){
-  const el=document.getElementById('pts-popup');
-  el.textContent=text;
+  const el=document.getElementById('pts-popup');el.textContent=text;
   const btn=document.querySelector('.opt.correct');
-  if(btn){
-    const r=btn.getBoundingClientRect();
-    el.style.left=(r.right-70)+'px';
-    el.style.top=(r.top+window.scrollY-10)+'px';
-  }
-  el.className='pts-popup';
-  void el.offsetWidth;
-  el.className='pts-popup go';
+  if(btn){const r=btn.getBoundingClientRect();el.style.left=(r.right-70)+'px';el.style.top=(r.top+window.scrollY-10)+'px';}
+  el.className='pts-popup';void el.offsetWidth;el.className='pts-popup go';
 }
 
 document.getElementById('next-btn').onclick=()=>{idx++;render();};
 
 async function finishQuiz(){
   stopTimer();
-  document.getElementById('screen-quiz').style.display='none';
-  document.getElementById('screen-results').style.display='block';
+  showScreen('screen-results');
   document.getElementById('big-score').textContent=totalPts;
   document.getElementById('s-correct').textContent=correct;
   document.getElementById('s-wrong').textContent=wrong;
   document.getElementById('s-timeouts').textContent=timeouts;
+  document.getElementById('lb-session-tag').textContent='SESSION: '+sessionCode;
   const pct=Math.round(totalPts/(QS.length*MAX_PTS)*100);
   let msg,sub;
-  if(pct===100){msg='🌟 Perfect & lightning fast!';sub='Maximum points — you\'re a cosmic speed genius.';}
+  if(pct===100){msg='🌟 Perfect & lightning fast!';sub='Maximum points — cosmic speed genius.';}
   else if(pct>=80){msg='🚀 Outstanding astronomer!';sub='Fast and accurate — the cosmos bow to you.';}
-  else if(pct>=60){msg='🌙 Solid space knowledge!';sub='Good answers! Answer faster next time for more points.';}
+  else if(pct>=60){msg='🌙 Solid space knowledge!';sub='Good answers! Faster next time for more points.';}
   else if(pct>=40){msg='☄️ The journey begins!';sub='Keep exploring — speed and accuracy come with practice.';}
   else{msg='🛸 Houston, we have a problem…';sub='Don\'t worry — every astronaut starts somewhere!';}
   document.getElementById('score-msg').textContent=msg;
   document.getElementById('score-sub').textContent=sub;
-  try{await saveScore(playerName,totalPts,correct,timeouts);}catch(e){console.warn('Save failed',e);}
+  try{await saveScore(playerName,sessionCode,totalPts,correct,timeouts);}catch(e){console.warn('Save failed',e);}
   loadLeaderboard();
 }
 
@@ -404,23 +542,21 @@ async function loadLeaderboard(){
   const el=document.getElementById('lb-list');
   el.innerHTML='<div class="lb-loading">LOADING SCORES...</div>';
   try{
-    const data=await fetchScores();
-    if(!data||!data.length){el.innerHTML='<div class="lb-empty">No scores yet — be the first!</div>';return;}
+    const data=await fetchScores(sessionCode);
+    if(!data||!data.length){el.innerHTML='<div class="lb-empty">No scores yet in this session.</div>';return;}
     const medals=['🥇','🥈','🥉'];
     let myIdx=-1;
     data.forEach((e,i)=>{if(e.name===playerName&&e.score===totalPts&&myIdx===-1)myIdx=i;});
-    const maxPts=QS.length*MAX_PTS;
     el.innerHTML=data.map((e,i)=>{
       const isMe=i===myIdx;
       const medal=i<3?'<span class="lb-rank">'+medals[i]+'</span>':'<span class="lb-rank rn">'+(i+1)+'</span>';
       return '<div class="lb-row'+(isMe?' me':'')+(i===0?' top1':'')+'">'+medal+'<div class="lb-name">'+esc(e.name)+(isMe?'<span class="you-tag">YOU</span>':'')+'</div><div class="lb-right"><div class="lb-pts">'+e.score+' pts</div><div class="lb-sub">'+(e.correct||0)+'/'+QS.length+' correct</div></div></div>';
     }).join('');
-  }catch(err){
-    el.innerHTML='<div class="lb-empty">Could not load scores.</div>';
-  }
+  }catch(err){el.innerHTML='<div class="lb-empty">Could not load scores.</div>';}
 }
 
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.className='err-box show';setTimeout(()=>el.className='err-box',4000);}
 
 function switchTab(t){
   document.getElementById('tab-r').className='tab'+(t==='r'?' on':'');
@@ -430,15 +566,13 @@ function switchTab(t){
   if(t==='lb')loadLeaderboard();
 }
 
-function restart(){
-  idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;playerName='';streak=0;
+function goHome(){
+  idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;playerName='';sessionCode='';streak=0;
   stopTimer();
-  nameInp.value='';launchBtn.disabled=true;
-  document.getElementById('live-score').textContent='0';
-  document.getElementById('streak-hud').style.opacity='0';
-  document.getElementById('screen-results').style.display='none';
-  document.getElementById('screen-name').style.display='block';
+  hostNameInp.value='';createBtn.disabled=true;
+  joinNameInp.value='';joinCodeInp.value='';joinBtn.disabled=true;
   switchTab('r');
+  showScreen('screen-home');
 }
 </script>
 </body>
