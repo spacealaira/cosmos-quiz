@@ -231,7 +231,7 @@ h1 em{color:var(--teal);font-style:normal}
       <button class="copy-btn" onclick="copyCode()">📋 COPY CODE</button>
     </div>
       <div class="qr-wrap" id="qr-container">
-        <canvas id="qr-canvas"></canvas>
+        <div id="qr-canvas"></div>
         <div class="qr-label">scan to open quiz</div>
       </div>
     <button class="btn btn-primary" onclick="hostStartQuiz()">▶ START PLAYING</button>
@@ -351,9 +351,24 @@ function generateQR(code){
   const el=document.getElementById('qr-canvas');
   el.innerHTML='';
   const url=window.location.origin+window.location.pathname+'?join='+code;
+  // Try qrcodejs first
   try{
-    new QRCode(el,{text:url,width:140,height:140,colorDark:'#05071a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-  }catch(e){ document.getElementById('qr-container').style.display='none'; }
+    new QRCode(el,{text:url,width:150,height:150,colorDark:'#05071a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    // qrcodejs creates an img inside — style it
+    setTimeout(()=>{
+      const img=el.querySelector('img');
+      if(img){img.style.borderRadius='8px';img.style.display='block';}
+      const canvas=el.querySelector('canvas');
+      if(canvas){canvas.style.display='none';} // hide canvas, show img only
+    },100);
+    return;
+  }catch(e){}
+  // Fallback: Google Charts QR API
+  const img=document.createElement('img');
+  img.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='+encodeURIComponent(url)+'&bgcolor=ffffff&color=05071a&margin=10';
+  img.style.cssText='width:150px;height:150px;border-radius:8px;display:block';
+  img.onerror=()=>document.getElementById('qr-container').style.display='none';
+  el.appendChild(img);
 }
 
 const SUPA_URL='https://uerzvrwlismqdxlwuxkl.supabase.co';
