@@ -6,6 +6,8 @@
 <title>Cosmos Quiz 🪐</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -23,7 +25,7 @@ html,body{min-height:100%;background:var(--bg);font-family:'Nunito',sans-serif;c
 .nebula-2{width:500px;height:500px;background:rgba(29,158,117,0.11);bottom:-100px;right:-100px}
 .planet{position:fixed;pointer-events:none;z-index:0;border-radius:50%}
 .planet-1{width:380px;height:380px;background:radial-gradient(circle at 30% 30%,rgba(83,74,183,0.15),transparent 70%);top:-100px;right:-100px;border:0.5px solid rgba(83,74,183,0.1)}
-.planet-2{width:220px;height:220px;background:radial-gradient(circle at 40% 40%,rgba(29,158,117,0.12),transparent 70%);bottom:40px;left:-60px;border:0.5px solid rgba(29,158,117,0.08)}
+.planet-2{width:220px;height:220px;background:radial-gradient(circle at 40% 40%,rgba(29,158,117,0.12),transparent 70%);bottom:40px;left:-60px;border:0.5px solid rgba(29,158,119,0.08)}
 .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:2rem 1.25rem 5rem}
 .header{text-align:center;padding:2.5rem 0 2rem}
 .logo{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#185FA5);margin-bottom:1.1rem;font-size:36px;box-shadow:0 0 40px rgba(83,74,183,0.45),0 0 80px rgba(83,74,183,0.15)}
@@ -37,32 +39,58 @@ h1 em{color:var(--teal);font-style:normal}
 .input:focus{border-color:rgba(83,74,183,0.8);box-shadow:0 0 0 3px rgba(83,74,183,0.12)}
 .input::placeholder{color:var(--hint)}
 .input.code-input{font-family:'Orbitron',monospace;font-size:1.4rem;letter-spacing:0.25em;text-align:center;text-transform:uppercase}
-.btn{width:100%;padding:1rem;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:opacity 0.2s,transform 0.15s,box-shadow 0.2s;margin-top:0.3rem}
+.btn{width:100%;padding:1rem;border:none;border-radius:12px;font-family:'Orbitron',monospace;font-size:0.82rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:opacity 0.2s,transform 0.15s;margin-top:0.3rem}
 .btn:hover:not(:disabled){opacity:0.88;transform:translateY(-2px)}
 .btn:disabled{opacity:0.28;cursor:not-allowed;transform:none}
 .btn-primary{background:linear-gradient(135deg,var(--purple),#185FA5);color:#fff}
 .btn-secondary{background:rgba(255,255,255,0.04);border:0.5px solid var(--border);color:var(--muted)}
 .btn-teal{background:linear-gradient(135deg,#1D9E75,#185FA5);color:#fff}
+.btn-red{background:linear-gradient(135deg,#9B1C1C,#E24B4A);color:#fff}
+.btn-amber{background:linear-gradient(135deg,#92400E,#EF9F27);color:#fff}
 .divider{display:flex;align-items:center;gap:1rem;margin:1.2rem 0;color:var(--hint);font-size:0.75rem;letter-spacing:0.1em;font-family:'Orbitron',monospace}
 .divider::before,.divider::after{content:'';flex:1;height:0.5px;background:rgba(130,120,240,0.2)}
-
-/* SESSION CODE DISPLAY */
+/* CODE DISPLAY */
 .code-display{background:rgba(83,74,183,0.12);border:0.5px solid rgba(83,74,183,0.4);border-radius:16px;padding:1.5rem;text-align:center;margin:1.2rem 0}
 .code-big{font-family:'Orbitron',monospace;font-size:2.8rem;font-weight:900;letter-spacing:0.3em;color:#fff;text-shadow:0 0 30px rgba(83,74,183,0.6)}
 .code-label{font-size:0.68rem;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;font-family:'Orbitron',monospace;margin-bottom:0.5rem}
 .code-hint{font-size:0.78rem;color:var(--hint);margin-top:0.6rem}
 .copy-btn{margin-top:0.75rem;padding:0.5rem 1.2rem;background:rgba(83,74,183,0.2);border:0.5px solid rgba(83,74,183,0.4);border-radius:8px;color:#AFA9EC;font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
 .copy-btn:hover{background:rgba(83,74,183,0.35);color:#fff}
-
+/* QR */
+.qr-wrap{display:flex;flex-direction:column;align-items:center;margin:0.75rem 0}
+.qr-wrap div{border-radius:12px;overflow:hidden}
+.qr-label{font-size:0.68rem;color:var(--hint);font-family:'Orbitron',monospace;letter-spacing:0.1em;margin-top:0.6rem;text-transform:uppercase}
+/* LOBBY */
+.lobby-count{font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.85rem}
+.lobby-count span{color:var(--teal);font-size:1rem;font-weight:700}
+.lobby-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.5rem;max-height:260px;overflow-y:auto;margin-bottom:1rem;padding-right:2px}
+.lobby-player{background:rgba(83,74,183,0.1);border:0.5px solid rgba(83,74,183,0.25);border-radius:10px;padding:0.6rem 0.85rem;font-size:0.88rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:0.5rem;animation:popIn 0.25s ease-out}
+@keyframes popIn{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}
+.lobby-player::before{content:'👤';font-size:0.75rem}
+.lobby-empty{text-align:center;color:var(--hint);font-size:0.82rem;padding:1.5rem 0;font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;animation:pulse 1.5s ease-in-out infinite}
+.pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--teal);margin-right:6px;animation:pulse 1s ease-in-out infinite}
+/* HOST CONTROLS */
+.host-controls{display:flex;gap:0.5rem;margin-top:0.75rem}
+.host-controls .btn{margin-top:0;flex:1;padding:0.75rem 0.5rem;font-size:0.68rem}
+/* WAITING SCREEN (player) */
+.waiting-anim{text-align:center;padding:1.5rem 0}
+.waiting-dots{display:flex;justify-content:center;gap:8px;margin-top:1rem}
+.waiting-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:bounce 1.2s ease-in-out infinite}
+.waiting-dot:nth-child(2){animation-delay:0.2s}
+.waiting-dot:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:0.4}50%{transform:translateY(-10px);opacity:1}}
 /* SESSION BADGE */
 .session-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(83,74,183,0.15);border:0.5px solid rgba(83,74,183,0.35);border-radius:8px;padding:0.4rem 0.85rem;font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;color:#AFA9EC;margin-bottom:1.2rem}
-
 /* LIVE HUD */
 .live-hud{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;gap:1rem}
 .hud-score{font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.1em;color:var(--muted)}
 .hud-score span{font-size:1.1rem;font-weight:700;color:#AFA9EC}
 .hud-streak{font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--amber);display:flex;align-items:center;gap:4px;min-width:60px;justify-content:flex-end;transition:opacity 0.3s}
-
+/* PAUSED OVERLAY */
+.paused-overlay{display:none;position:fixed;inset:0;background:rgba(5,7,26,0.88);z-index:150;align-items:center;justify-content:center;flex-direction:column;gap:1rem;backdrop-filter:blur(8px)}
+.paused-overlay.show{display:flex}
+.paused-title{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;color:#fff;letter-spacing:0.1em}
+.paused-sub{font-size:0.85rem;color:var(--muted)}
 /* TIMER */
 .timer-wrap{margin-bottom:1.4rem}
 .timer-bar-bg{height:6px;background:rgba(255,255,255,0.07);border-radius:6px;overflow:hidden}
@@ -70,14 +98,12 @@ h1 em{color:var(--teal);font-style:normal}
 .timer-meta{display:flex;justify-content:space-between;margin-top:5px}
 .timer-secs{font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;transition:color 0.4s}
 .pts-hint{font-size:0.68rem;color:var(--hint);font-family:'Orbitron',monospace;letter-spacing:0.08em}
-
 /* PROGRESS */
 .prog-wrap{margin-bottom:1rem}
 .prog-bar{height:3px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--teal));border-radius:3px;transition:width 0.55s cubic-bezier(.4,0,.2,1)}
 .prog-meta{display:flex;justify-content:space-between;margin-top:5px}
 .prog-meta span{font-size:0.68rem;font-family:'Orbitron',monospace;letter-spacing:0.1em;color:var(--hint)}
-
 /* QUESTION */
 .q-num{font-size:0.68rem;font-family:'Orbitron',monospace;letter-spacing:0.16em;color:var(--teal);margin-bottom:0.75rem;text-transform:uppercase}
 .q-text{font-size:1.15rem;color:var(--text);font-weight:700;line-height:1.55;margin-bottom:1.4rem}
@@ -92,12 +118,10 @@ h1 em{color:var(--teal);font-style:normal}
 .opt-l{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;min-width:28px;border-radius:7px;background:rgba(130,120,240,0.16);font-family:'Orbitron',monospace;font-size:0.62rem;color:#AFA9EC;font-weight:700}
 .opt.correct .opt-l{background:rgba(29,158,117,0.28);color:var(--teal)}
 .opt.wrong .opt-l{background:rgba(226,75,74,0.22);color:var(--red)}
-
 /* POINTS POPUP */
 .pts-popup{position:fixed;font-family:'Orbitron',monospace;font-weight:900;font-size:1.6rem;pointer-events:none;z-index:100;opacity:0;color:#9FE1CB}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-40px) scale(1.1)}100%{opacity:0;transform:translateY(-80px) scale(0.9)}}
 .pts-popup.go{animation:floatUp 0.9s ease-out forwards}
-
 .feedback{margin-top:1rem;padding:0.85rem 1.1rem;border-radius:12px;font-size:0.87rem;line-height:1.5;font-weight:600;display:none}
 .feedback.show{display:block}
 .feedback.c{background:rgba(29,158,117,0.1);border:0.5px solid rgba(93,202,165,0.28);color:var(--teal-light)}
@@ -106,7 +130,6 @@ h1 em{color:var(--teal);font-style:normal}
 .next-btn{margin-top:1rem;width:100%;padding:0.9rem;background:linear-gradient(135deg,var(--purple),#185FA5);border:none;border-radius:12px;color:#fff;font-family:'Orbitron',monospace;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:opacity 0.2s,transform 0.15s;display:none}
 .next-btn:hover{opacity:0.85;transform:translateY(-1px)}
 .next-btn.show{display:block}
-
 /* RESULTS */
 .tabs{display:flex;gap:0.5rem;margin-bottom:1.75rem}
 .tab{flex:1;padding:0.65rem;background:rgba(255,255,255,0.03);border:0.5px solid rgba(130,120,240,0.18);border-radius:10px;color:rgba(180,190,255,0.45);font-family:'Orbitron',monospace;font-size:0.62rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
@@ -125,7 +148,6 @@ h1 em{color:var(--teal);font-style:normal}
 .view-lb-btn:hover{background:rgba(83,74,183,0.35);color:#fff}
 .restart-btn{width:100%;padding:0.85rem;background:rgba(255,255,255,0.03);border:0.5px solid rgba(130,120,240,0.22);border-radius:12px;color:rgba(180,190,255,0.5);font-family:'Orbitron',monospace;font-size:0.72rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
 .restart-btn:hover{background:rgba(83,74,183,0.18);color:#fff}
-
 /* LEADERBOARD */
 .lb-session-tag{font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.15em;color:var(--teal);margin-bottom:1rem;text-align:center}
 .lb-row{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:0.75rem;padding:0.75rem 0.9rem;border-radius:12px;margin-bottom:0.45rem;background:rgba(255,255,255,0.025);border:0.5px solid rgba(130,120,240,0.12)}
@@ -144,9 +166,10 @@ h1 em{color:var(--teal);font-style:normal}
 @keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
 .err-box{background:rgba(226,75,74,0.09);border:0.5px solid rgba(226,75,74,0.3);border-radius:10px;padding:0.8rem 1rem;font-size:0.85rem;color:#F09595;margin-top:0.75rem;display:none}
 .err-box.show{display:block}
-
-/* ── MOBILE RESPONSIVENESS ─────────────────────────────── */
-@media (max-width: 480px) {
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(226,75,74,0.95);color:#fff;font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.08em;padding:0.75rem 1.25rem;border-radius:10px;z-index:200;transition:transform 0.3s ease;white-space:nowrap;backdrop-filter:blur(10px)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:rgba(29,158,117,0.95)}
+@media(max-width:480px){
   .wrap{padding:1rem 0.85rem 4rem}
   h1{font-size:1.8rem}
   .logo{width:60px;height:60px;font-size:26px}
@@ -157,36 +180,13 @@ h1 em{color:var(--teal);font-style:normal}
   .big-score{font-size:2.8rem}
   .stats{grid-template-columns:1fr 1fr 1fr;gap:0.5rem}
   .stat-v{font-size:1rem}
-  .stat-l{font-size:0.6rem}
-  .tabs{gap:0.35rem}
   .tab{font-size:0.56rem;padding:0.55rem 0.3rem}
   .lb-row{grid-template-columns:32px 1fr auto;gap:0.5rem;padding:0.65rem 0.7rem}
-  .lb-name{font-size:0.85rem}
-  .lb-pts{font-size:0.78rem}
-  .hud-score span{font-size:0.95rem}
-  .live-hud{margin-bottom:1rem}
   .input.code-input{font-size:1.1rem;letter-spacing:0.18em}
   .btn{font-size:0.75rem;padding:0.9rem}
-  .next-btn{font-size:0.7rem}
-  .score-msg{font-size:0.95rem}
+  .host-controls{flex-direction:column}
 }
-@media (max-width: 360px) {
-  .code-big{font-size:1.6rem;letter-spacing:0.12em}
-  .stats{grid-template-columns:1fr 1fr;gap:0.5rem}
-}
-
-.qr-wrap{display:flex;flex-direction:column;align-items:center;margin:0.75rem 0}
-.qr-wrap canvas{border-radius:12px;background:#fff;padding:10px}
-.qr-label{font-size:0.68rem;color:var(--hint);font-family:'Orbitron',monospace;letter-spacing:0.1em;margin-top:0.6rem;text-transform:uppercase}
-
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(226,75,74,0.95);color:#fff;font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.08em;padding:0.75rem 1.25rem;border-radius:10px;z-index:200;transition:transform 0.3s ease;white-space:nowrap;backdrop-filter:blur(10px)}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.toast.success{background:rgba(29,158,117,0.95)}
-.reconnecting{display:none;align-items:center;gap:0.5rem;font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--amber);letter-spacing:0.1em;margin-bottom:1rem}
-.reconnecting.show{display:flex}
-.reconnecting-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 0.8s ease-in-out infinite}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <div class="stars" id="stars"></div>
@@ -195,6 +195,11 @@ h1 em{color:var(--teal);font-style:normal}
 <div class="nebula nebula-2"></div>
 <div class="planet planet-1"></div>
 <div class="planet planet-2"></div>
+<div class="paused-overlay" id="paused-overlay">
+  <div class="paused-title">⏸ PAUSED</div>
+  <div class="paused-sub">The host has paused the game</div>
+</div>
+<div class="pts-popup" id="pts-popup"></div>
 
 <div class="wrap">
   <div class="header">
@@ -203,7 +208,7 @@ h1 em{color:var(--teal);font-style:normal}
     <p class="tagline" id="main-tagline">Host a session or join one</p>
   </div>
 
-  <!-- SCREEN: Home -->
+  <!-- HOME -->
   <div class="card" id="screen-home">
     <div class="sec-label">Mission Control</div>
     <button class="btn btn-primary" onclick="showScreen('screen-host')">🚀 HOST A SESSION</button>
@@ -211,7 +216,7 @@ h1 em{color:var(--teal);font-style:normal}
     <button class="btn btn-teal" onclick="showScreen('screen-join')">🎮 JOIN WITH CODE</button>
   </div>
 
-  <!-- SCREEN: Host -->
+  <!-- HOST SETUP -->
   <div class="card" id="screen-host" style="display:none">
     <div class="sec-label">Host Setup</div>
     <label class="field-label">Your name</label>
@@ -221,24 +226,49 @@ h1 em{color:var(--teal);font-style:normal}
     <button class="btn btn-secondary" style="margin-top:0.5rem" onclick="showScreen('screen-home')">← BACK</button>
   </div>
 
-  <!-- SCREEN: Session Created -->
+  <!-- SESSION CREATED + LOBBY (HOST VIEW) -->
   <div class="card" id="screen-created" style="display:none">
-    <div class="sec-label">Session Ready</div>
+    <div class="sec-label">🟢 Session Live</div>
     <div class="code-display">
       <div class="code-label">Share this code with players</div>
       <div class="code-big" id="display-code">------</div>
-      <div class="code-hint">Players go to the quiz site and enter this code</div>
+      <div class="code-hint">Players go to this site and enter the code</div>
       <button class="copy-btn" onclick="copyCode()">📋 COPY CODE</button>
     </div>
-      <div class="qr-wrap" id="qr-container">
-        <div id="qr-canvas"></div>
-        <div class="qr-label">scan to open quiz</div>
-      </div>
-    <button class="btn btn-primary" onclick="hostStartQuiz()">▶ START PLAYING</button>
-    <button class="btn btn-secondary" style="margin-top:0.5rem" onclick="showScreen('screen-home')">← BACK TO HOME</button>
+    <div class="qr-wrap" id="qr-container">
+      <div id="qr-canvas"></div>
+      <div class="qr-label">scan to open quiz</div>
+    </div>
+    <div class="lobby-count"><span class="pulse-dot"></span>WAITING FOR PLAYERS — <span id="lobby-count">0</span> JOINED</div>
+    <div class="lobby-grid" id="lobby-grid">
+      <div class="lobby-empty">Waiting for players to join...</div>
+    </div>
+    <button class="btn btn-primary" id="startGameBtn" onclick="hostStartGame()">▶ START GAME</button>
+    <div class="host-controls">
+      <button class="btn btn-secondary" onclick="showScreen('screen-home')">← BACK</button>
+    </div>
   </div>
 
-  <!-- SCREEN: Join -->
+  <!-- HOST IN-GAME CONTROLS -->
+  <div class="card" id="screen-host-controls" style="display:none">
+    <div class="sec-label">🎮 Host Controls</div>
+    <div class="session-badge" id="host-session-badge">🪐 SESSION: ------</div>
+    <div class="lobby-count">PLAYERS IN SESSION: <span id="hc-player-count">0</span></div>
+    <div style="margin:1rem 0;padding:1rem;background:rgba(255,255,255,0.03);border-radius:12px;border:0.5px solid rgba(130,120,240,0.15)">
+      <div style="font-size:0.7rem;font-family:'Orbitron',monospace;color:var(--hint);letter-spacing:0.1em;margin-bottom:0.5rem">GAME STATUS</div>
+      <div id="hc-status" style="font-size:1rem;font-weight:700;color:var(--teal)">▶ Running</div>
+    </div>
+    <div class="host-controls" style="margin-top:0.5rem">
+      <button class="btn btn-amber" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
+      <button class="btn btn-red" onclick="endGame()">⏹ END GAME</button>
+    </div>
+    <div style="margin-top:0.75rem">
+      <div style="font-size:0.68rem;font-family:'Orbitron',monospace;color:var(--hint);letter-spacing:0.1em;margin-bottom:0.5rem">LIVE LEADERBOARD</div>
+      <div id="hc-lb" style="max-height:200px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+  <!-- JOIN -->
   <div class="card" id="screen-join" style="display:none">
     <div class="sec-label">Join Session</div>
     <label class="field-label">Your name</label>
@@ -250,7 +280,19 @@ h1 em{color:var(--teal);font-style:normal}
     <button class="btn btn-secondary" style="margin-top:0.5rem" onclick="showScreen('screen-home')">← BACK</button>
   </div>
 
-  <!-- SCREEN: Quiz -->
+  <!-- WAITING (player waiting for host to start) -->
+  <div class="card" id="screen-waiting" style="display:none">
+    <div class="sec-label">Lobby</div>
+    <div class="waiting-anim">
+      <div style="font-size:2rem">🚀</div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.8rem;letter-spacing:0.1em;color:var(--muted);margin-top:0.75rem">WAITING FOR HOST TO START</div>
+      <div class="waiting-dots"><div class="waiting-dot"></div><div class="waiting-dot"></div><div class="waiting-dot"></div></div>
+    </div>
+    <div class="lobby-count" style="text-align:center"><span id="waiting-count">0</span> PLAYERS JOINED</div>
+    <div style="font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:0.12em;color:var(--teal);text-align:center;margin-top:0.5rem" id="waiting-code-display"></div>
+  </div>
+
+  <!-- QUIZ -->
   <div id="screen-quiz" style="display:none">
     <div class="card">
       <div class="session-badge" id="quiz-session-badge">🪐 SESSION: ------</div>
@@ -280,7 +322,7 @@ h1 em{color:var(--teal);font-style:normal}
     </div>
   </div>
 
-  <!-- SCREEN: Results -->
+  <!-- RESULTS -->
   <div id="screen-results" style="display:none">
     <div class="card">
       <div class="tabs">
@@ -311,102 +353,28 @@ h1 em{color:var(--teal);font-style:normal}
   </div>
 </div>
 
-<div class="pts-popup" id="pts-popup"></div>
-
 <script>
-
-// ── Toast notifications ───────────────────────────────────
-let toastTimer=null;
-function toast(msg,type='error'){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.className='toast'+(type==='success'?' success':'');
-  void el.offsetWidth;
-  el.className+=' show';
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.className='toast'+(type==='success'?' success':''),3500);
-}
-
-// ── Session recovery on refresh ───────────────────────────
-function saveSessionState(){
-  if(!sessionCode||!playerName) return;
-  sessionStorage.setItem('cq_session',JSON.stringify({sessionCode,playerName,idx,totalPts,correct,wrong,timeouts,streak}));
-}
-function loadSessionState(){
-  try{
-    const raw=sessionStorage.getItem('cq_session');
-    if(!raw) return false;
-    const s=JSON.parse(raw);
-    if(!s.sessionCode||!s.playerName) return false;
-    sessionCode=s.sessionCode; playerName=s.playerName;
-    idx=s.idx||0; totalPts=s.totalPts||0; correct=s.correct||0;
-    wrong=s.wrong||0; timeouts=s.timeouts||0; streak=s.streak||0;
-    return true;
-  }catch(e){return false;}
-}
-function clearSessionState(){ sessionStorage.removeItem('cq_session'); }
-
-// ── QR Code generator ─────────────────────────────────────
-function generateQR(code){
-  const el=document.getElementById('qr-canvas');
-  el.innerHTML='';
-  const url=window.location.origin+window.location.pathname+'?join='+code;
-  // Try qrcodejs first
-  try{
-    new QRCode(el,{text:url,width:150,height:150,colorDark:'#05071a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-    // qrcodejs creates an img inside — style it
-    setTimeout(()=>{
-      const img=el.querySelector('img');
-      if(img){img.style.borderRadius='8px';img.style.display='block';}
-      const canvas=el.querySelector('canvas');
-      if(canvas){canvas.style.display='none';} // hide canvas, show img only
-    },100);
-    return;
-  }catch(e){}
-  // Fallback: Google Charts QR API
-  const img=document.createElement('img');
-  img.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='+encodeURIComponent(url)+'&bgcolor=ffffff&color=05071a&margin=10';
-  img.style.cssText='width:150px;height:150px;border-radius:8px;display:block';
-  img.onerror=()=>document.getElementById('qr-container').style.display='none';
-  el.appendChild(img);
-}
-
 const SUPA_URL='https://uerzvrwlismqdxlwuxkl.supabase.co';
 const SUPA_KEY='sb_publishable_0vnntWRJaunCP0pkKGu-eQ_YoGL6erE';
 const HEADERS={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
-const TIME_PER_Q=45;
-const MAX_PTS=100;
+const TIME_PER_Q=45, MAX_PTS=100;
 
-// ── Supabase ─────────────────────────────────────────────────
-async function apiPost(path,body){
-  const r=await fetch(SUPA_URL+path,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(body)});
-  return r.json();
-}
-async function apiGet(path){
-  const r=await fetch(SUPA_URL+path,{headers:HEADERS});
-  return r.json();
-}
+// ── Supabase client for Realtime ─────────────────────────────
+const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 
-async function createSessionInDB(hostName,code){
-  return apiPost('/rest/v1/sessions',{host_name:hostName,code});
+// ── REST helpers ─────────────────────────────────────────────
+async function apiPost(path,body){const r=await fetch(SUPA_URL+path,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(body)});return r.json();}
+async function apiPatch(path,body){const r=await fetch(SUPA_URL+path,{method:'PATCH',headers:{...HEADERS,'Prefer':'return=minimal'},body:JSON.stringify(body)});return r;}
+async function apiGet(path){const r=await fetch(SUPA_URL+path,{headers:HEADERS});return r.json();}
+
+async function saveScore(name,code,pts,cor,to){
+  await fetch(SUPA_URL+'/rest/v1/scores',{method:'POST',headers:{...HEADERS,'Prefer':'return=minimal'},
+    body:JSON.stringify({name,session_code:code,score:pts,total:QS.length*MAX_PTS,pct:Math.round(pts/(QS.length*MAX_PTS)*100),correct:cor,timeouts:to})});
 }
-async function checkSessionExists(code){
-  const data=await apiGet('/rest/v1/sessions?code=eq.'+code+'&select=code');
-  return Array.isArray(data)&&data.length>0;
-}
-async function saveScore(name,sessionCode,totalPts,correct,timeouts){
-  await fetch(SUPA_URL+'/rest/v1/scores',{
-    method:'POST',
-    headers:{...HEADERS,'Prefer':'return=minimal'},
-    body:JSON.stringify({name,session_code:sessionCode,score:totalPts,total:QS.length*MAX_PTS,pct:Math.round(totalPts/(QS.length*MAX_PTS)*100),correct,timeouts})
-  });
-}
-async function fetchScores(sessionCode){
-  return apiGet('/rest/v1/scores?session_code=eq.'+sessionCode+'&select=name,score,correct,timeouts,created_at&order=score.desc,created_at.asc&limit=50');
-}
+async function fetchScores(code){return apiGet('/rest/v1/scores?session_code=eq.'+code+'&select=name,score,correct,timeouts&order=score.desc,created_at.asc&limit=50');}
 
 // ── Questions ────────────────────────────────────────────────
-const QS=[
+const DEFAULT_QS=[
   {q:"What is the largest planet in our solar system?",opts:["Saturn","Jupiter","Neptune","Uranus"],ans:1,exp:"Jupiter is so massive all other planets could fit inside it!"},
   {q:"How long does light from the Sun take to reach Earth?",opts:["8 minutes","3 minutes","23 minutes","45 seconds"],ans:0,exp:"Sunlight travels 150 million km, arriving in about 8 minutes 20 seconds."},
   {q:"What is a light-year?",opts:["Time to orbit the Sun","Distance light travels in one year","The age of a star","The brightness of a star"],ans:1,exp:"A light-year is a distance — about 9.46 trillion kilometres!"},
@@ -418,82 +386,182 @@ const QS=[
   {q:"What type of star is our Sun?",opts:["Red giant","White dwarf","Yellow dwarf","Neutron star"],ans:2,exp:"The Sun is a G-type main-sequence star — middle-aged and mid-sized."},
   {q:"Approximately how old is the universe?",opts:["4.5 billion years","13.8 billion years","100 million years","1 trillion years"],ans:1,exp:"The universe is about 13.8 billion years old, dating back to the Big Bang."},
 ];
+let QS=[...DEFAULT_QS];
 const LETTERS=['A','B','C','D'];
 
 // ── State ────────────────────────────────────────────────────
 let idx=0,totalPts=0,correct=0,wrong=0,timeouts=0;
-let answered=false,playerName='',sessionCode='',streak=0;
+let answered=false,playerName='',sessionCode='',streak=0,isHost=false,isPaused=false;
 let timerInterval=null,timeLeft=TIME_PER_Q,qStartTime=0;
+let realtimeChannel=null,lobbyPlayers=[];
 
 // ── Stars ────────────────────────────────────────────────────
-(function(){
-  const c=document.getElementById('stars');
-  for(let i=0;i<140;i++){
-    const s=document.createElement('div');s.className='star';
-    const sz=Math.random()*2.4+0.4;
-    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${1.5+Math.random()*3.5}s;--min:${0.08+Math.random()*0.25};animation-delay:${Math.random()*4}s`;
-    c.appendChild(s);
-  }
-})();
+(function(){const c=document.getElementById('stars');for(let i=0;i<140;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2.4+0.4;s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${1.5+Math.random()*3.5}s;--min:${0.08+Math.random()*0.25};animation-delay:${Math.random()*4}s`;c.appendChild(s);}})();
+
+// ── Toast ────────────────────────────────────────────────────
+let toastTimer=null;
+function toast(msg,type='error'){const el=document.getElementById('toast');el.textContent=msg;el.className='toast'+(type==='success'?' success':'');void el.offsetWidth;el.className+=' show';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.className='toast'+(type==='success'?' success':''),3500);}
 
 // ── Screen nav ───────────────────────────────────────────────
 function showScreen(id){
-  ['screen-home','screen-host','screen-created','screen-join','screen-quiz','screen-results'].forEach(s=>{
-    const el=document.getElementById(s);
-    if(el) el.style.display=s===id?'block':'none';
+  ['screen-home','screen-host','screen-created','screen-join','screen-waiting','screen-quiz','screen-results','screen-host-controls'].forEach(s=>{
+    const el=document.getElementById(s);if(el)el.style.display=s===id?'block':'none';
   });
 }
 
 // ── Code gen ─────────────────────────────────────────────────
-function genCode(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:6},()=>c[Math.floor(Math.random()*c.length)]).join('');}
+
+// ── QR ───────────────────────────────────────────────────────
+function generateQR(code){
+  const el=document.getElementById('qr-canvas');el.innerHTML='';
+  const url=window.location.origin+window.location.pathname+'?join='+code;
+  try{
+    new QRCode(el,{text:url,width:150,height:150,colorDark:'#05071a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    setTimeout(()=>{const img=el.querySelector('img');if(img)img.style.borderRadius='8px';const cv=el.querySelector('canvas');if(cv)cv.style.display='none';},100);
+  }catch(e){
+    const img=document.createElement('img');
+    img.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='+encodeURIComponent(url)+'&bgcolor=ffffff&color=05071a&margin=10';
+    img.style.cssText='width:150px;height:150px;border-radius:8px;display:block';
+    img.onerror=()=>document.getElementById('qr-container').style.display='none';
+    el.appendChild(img);
+  }
 }
 
-// ── Host flow ─────────────────────────────────────────────────
+// ── HOST FLOW ─────────────────────────────────────────────────
 const hostNameInp=document.getElementById('hostName');
 const createBtn=document.getElementById('createBtn');
 hostNameInp.addEventListener('input',()=>{createBtn.disabled=hostNameInp.value.trim().length<2;});
 hostNameInp.addEventListener('keydown',e=>{if(e.key==='Enter'&&hostNameInp.value.trim().length>=2)createSession();});
+createBtn.addEventListener('click',createSession);
 
 async function createSession(){
   const name=hostNameInp.value.trim();
   if(!name||name.length<2)return;
-  createBtn.disabled=true;
-  createBtn.textContent='CREATING...';
+  createBtn.disabled=true;createBtn.textContent='CREATING...';
   const code=genCode();
   try{
-    await createSessionInDB(name,code);
-    sessionCode=code;
-    playerName=name;
+    await apiPost('/rest/v1/sessions',{host_name:name,code,status:'waiting'});
+    sessionCode=code;playerName=name;isHost=true;
     document.getElementById('display-code').textContent=code;
     showScreen('screen-created');
     generateQR(code);
-  }catch(e){
-    showErr('host-err','Could not create session. Try again.');
-    toast('Could not create session. Check your connection.');
-  }
-  createBtn.disabled=false;
-  createBtn.textContent='✦ CREATE SESSION';
+    subscribeToLobby(code);
+  }catch(e){showErr('host-err','Could not create session.');toast('Could not create session.');}
+  createBtn.disabled=false;createBtn.textContent='✦ CREATE SESSION';
 }
 
 function copyCode(){
-  navigator.clipboard.writeText(sessionCode).then(()=>{
-    const btn=document.querySelector('.copy-btn');
-    btn.textContent='✓ COPIED!';
-    setTimeout(()=>btn.textContent='📋 COPY CODE',2000);
-  });
+  navigator.clipboard.writeText(sessionCode).then(()=>{const b=document.querySelector('.copy-btn');b.textContent='✓ COPIED!';setTimeout(()=>b.textContent='📋 COPY CODE',2000);});
 }
 
-function hostStartQuiz(){
-  startQuiz(playerName,sessionCode);
+// ── REALTIME LOBBY ────────────────────────────────────────────
+function subscribeToLobby(code){
+  if(realtimeChannel)supabase.removeChannel(realtimeChannel);
+  realtimeChannel=supabase.channel('lobby-'+code)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'players',filter:'session_code=eq.'+code},payload=>{
+      if(!lobbyPlayers.find(p=>p.name===payload.new.name)){
+        lobbyPlayers.push(payload.new);
+        renderLobby();
+      }
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'sessions',filter:'code=eq.'+code},payload=>{
+      handleSessionUpdate(payload.new);
+    })
+    .subscribe();
 }
 
-// ── Join flow ─────────────────────────────────────────────────
+function renderLobby(){
+  const grid=document.getElementById('lobby-grid');
+  const count=document.getElementById('lobby-count');
+  count.innerHTML='<span class="pulse-dot"></span>WAITING FOR PLAYERS — <span>'+lobbyPlayers.length+'</span> JOINED';
+  if(!lobbyPlayers.length){grid.innerHTML='<div class="lobby-empty">Waiting for players to join...</div>';return;}
+  grid.innerHTML=lobbyPlayers.map(p=>'<div class="lobby-player">'+esc(p.name)+'</div>').join('');
+  // also update host controls count
+  document.getElementById('hc-player-count').textContent=lobbyPlayers.length;
+}
+
+function renderWaitingCount(n){
+  document.getElementById('waiting-count').textContent=n;
+}
+
+// ── SESSION STATUS HANDLER (for players) ─────────────────────
+function handleSessionUpdate(session){
+  if(session.status==='started'&&document.getElementById('screen-waiting').style.display!=='none'){
+    // host started the game — player starts quiz
+    startQuiz(playerName,sessionCode);
+  }
+  if(session.status==='paused'){
+    isPaused=true;
+    document.getElementById('paused-overlay').className='paused-overlay show';
+    stopTimer();
+  }
+  if(session.status==='resumed'){
+    isPaused=false;
+    document.getElementById('paused-overlay').className='paused-overlay';
+    startTimer();
+  }
+  if(session.status==='ended'&&!document.getElementById('screen-results').style.display){
+    toast('Host ended the game.','error');
+    finishQuiz();
+  }
+}
+
+// ── HOST: Start game ─────────────────────────────────────────
+async function hostStartGame(){
+  if(!lobbyPlayers.length){toast('Wait for at least one player to join!');return;}
+  await apiPatch('/rest/v1/sessions?code=eq.'+sessionCode,{status:'started',started_at:new Date().toISOString()});
+  // host goes to host controls screen
+  document.getElementById('host-session-badge').textContent='🪐 SESSION: '+sessionCode;
+  document.getElementById('hc-player-count').textContent=lobbyPlayers.length;
+  showScreen('screen-host-controls');
+  startHostLBPolling();
+}
+
+// ── HOST: Pause / Resume ──────────────────────────────────────
+let gamePaused=false;
+async function togglePause(){
+  gamePaused=!gamePaused;
+  const status=gamePaused?'paused':'resumed';
+  await apiPatch('/rest/v1/sessions?code=eq.'+sessionCode,{status});
+  document.getElementById('pauseBtn').textContent=gamePaused?'▶ RESUME':'⏸ PAUSE';
+  document.getElementById('hc-status').textContent=gamePaused?'⏸ Paused':'▶ Running';
+  document.getElementById('hc-status').style.color=gamePaused?'var(--amber)':'var(--teal)';
+}
+
+// ── HOST: End game ────────────────────────────────────────────
+async function endGame(){
+  if(!confirm('End the game for all players?'))return;
+  await apiPatch('/rest/v1/sessions?code=eq.'+sessionCode,{status:'ended'});
+  stopHostLBPolling();
+  goHome();
+  toast('Game ended.','success');
+}
+
+// ── HOST: Live leaderboard polling ───────────────────────────
+let hcLBInterval=null;
+function startHostLBPolling(){
+  renderHostLB();
+  hcLBInterval=setInterval(renderHostLB,5000);
+}
+function stopHostLBPolling(){clearInterval(hcLBInterval);}
+async function renderHostLB(){
+  try{
+    const data=await fetchScores(sessionCode);
+    if(!data||!data.length){document.getElementById('hc-lb').innerHTML='<div style="font-size:0.78rem;color:var(--hint);padding:0.5rem 0">No scores yet...</div>';return;}
+    const medals=['🥇','🥈','🥉'];
+    document.getElementById('hc-lb').innerHTML=data.slice(0,10).map((e,i)=>
+      '<div class="lb-row">'+(i<3?'<span class="lb-rank">'+medals[i]+'</span>':'<span class="lb-rank rn">'+(i+1)+'</span>')+
+      '<div class="lb-name">'+esc(e.name)+'</div>'+
+      '<div class="lb-right"><div class="lb-pts">'+e.score+' pts</div></div></div>'
+    ).join('');
+  }catch(e){}
+}
+
+// ── JOIN FLOW ─────────────────────────────────────────────────
 const joinNameInp=document.getElementById('joinName');
 const joinCodeInp=document.getElementById('joinCode');
 const joinBtn=document.getElementById('joinBtn');
-
 function checkJoinReady(){joinBtn.disabled=joinNameInp.value.trim().length<2||joinCodeInp.value.trim().length<6;}
 joinNameInp.addEventListener('input',checkJoinReady);
 joinCodeInp.addEventListener('input',()=>{joinCodeInp.value=joinCodeInp.value.toUpperCase();checkJoinReady();});
@@ -501,51 +569,70 @@ joinCodeInp.addEventListener('input',()=>{joinCodeInp.value=joinCodeInp.value.to
 async function joinSession(){
   const name=joinNameInp.value.trim();
   const code=joinCodeInp.value.trim().toUpperCase();
-  if(!name||!code||code.length!==6)return;
-  joinBtn.disabled=true;
-  joinBtn.textContent='CHECKING...';
+  if(!name||code.length!==6)return;
+  joinBtn.disabled=true;joinBtn.textContent='CHECKING...';
   try{
-    const exists=await checkSessionExists(code);
-    if(!exists){showErr('join-err','Session not found. Check the code and try again.');toast('Session not found. Check the code.');joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';return;}
-    // Check duplicate name
+    const sessions=await apiGet('/rest/v1/sessions?code=eq.'+code+'&select=code,status');
+    if(!Array.isArray(sessions)||!sessions.length){showErr('join-err','Session not found.');toast('Session not found.');joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';return;}
+    // Duplicate name check
     const existing=await fetchScores(code);
     if(Array.isArray(existing)&&existing.some(e=>e.name.toLowerCase()===name.toLowerCase())){
-      showErr('join-err','That name is already taken in this session. Try a different name.');
-      toast('Name already taken in this session!');
-      joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';return;
+      showErr('join-err','That name is already taken. Try another.');toast('Name already taken!');joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';return;
     }
-    startQuiz(name,code);
-  }catch(e){
-    showErr('join-err','Could not connect. Check your internet and try again.');
-  }
-  joinBtn.disabled=false;
-  joinBtn.textContent='🎮 JOIN SESSION';
+    // Register player
+    await apiPost('/rest/v1/players',{session_code:code,name,status:'waiting'});
+    playerName=name;sessionCode=code;isHost=false;
+    // Check if game already started
+    if(sessions[0].status==='started'){
+      startQuiz(name,code);
+    }else{
+      // Go to waiting room
+      document.getElementById('waiting-code-display').textContent='SESSION: '+code;
+      showScreen('screen-waiting');
+      subscribeToLobby(code);
+      // Poll player count for waiting screen
+      pollWaitingCount(code);
+    }
+  }catch(e){showErr('join-err','Connection error.');toast('Could not connect.');}
+  joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';
 }
 
-// ── Quiz ──────────────────────────────────────────────────────
+let waitingPollInterval=null;
+function pollWaitingCount(code){
+  clearInterval(waitingPollInterval);
+  waitingPollInterval=setInterval(async()=>{
+    try{const p=await apiGet('/rest/v1/players?session_code=eq.'+code+'&select=name');if(Array.isArray(p))renderWaitingCount(p.length);}catch(e){}
+  },3000);
+}
+
+// ── QUIZ ──────────────────────────────────────────────────────
 function startQuiz(name,code){
-  playerName=name; sessionCode=code;
-  idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;streak=0;
+  clearInterval(waitingPollInterval);
+  playerName=name;sessionCode=code;
+  idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;streak=0;isPaused=false;
   document.getElementById('quiz-session-badge').textContent='🪐 SESSION: '+code;
   document.getElementById('live-score').textContent='0';
   document.getElementById('streak-hud').style.opacity='0';
+  // Subscribe to session status changes (for pause/end)
+  if(!isHost)subscribeToLobby(code);
   showScreen('screen-quiz');
   render();
 }
 
-function calcPoints(secsLeft){return Math.round(10+(secsLeft/TIME_PER_Q)*90);}
+function calcPoints(s){return Math.round(10+(s/TIME_PER_Q)*90);}
 
 function startTimer(){
   clearInterval(timerInterval);
-  timeLeft=TIME_PER_Q; qStartTime=Date.now();
+  timeLeft=TIME_PER_Q;qStartTime=Date.now();
   updateTimerUI();
   timerInterval=setInterval(()=>{
+    if(isPaused)return;
     timeLeft=Math.max(0,TIME_PER_Q-(Date.now()-qStartTime)/1000);
     updateTimerUI();
     if(timeLeft<=0){clearInterval(timerInterval);onTimeout();}
   },80);
 }
-
+function stopTimer(){clearInterval(timerInterval);}
 function updateTimerUI(){
   const pct=(timeLeft/TIME_PER_Q)*100;
   const fill=document.getElementById('timer-fill');
@@ -557,20 +644,14 @@ function updateTimerUI(){
   else if(pct>25){fill.style.background='var(--amber)';secs.style.color='var(--amber)';}
   else{fill.style.background='var(--red)';secs.style.color='var(--red)';}
 }
-
-function stopTimer(){clearInterval(timerInterval);}
-
 function onTimeout(){
   if(answered)return;
   answered=true;timeouts++;streak=0;updateStreakHud();
   const q=QS[idx];
   document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;b.className=j===q.ans?'opt correct':'opt timeout';});
-  const fb=document.getElementById('feedback');
-  fb.className='feedback t show';
-  fb.textContent='⏰ Time\'s up! '+q.exp;
+  const fb=document.getElementById('feedback');fb.className='feedback t show';fb.textContent='⏰ Time\'s up! '+q.exp;
   document.getElementById('next-btn').className='next-btn show';
 }
-
 function render(){
   if(idx>=QS.length){finishQuiz();return;}
   const q=QS[idx];
@@ -591,9 +672,8 @@ function render(){
   });
   startTimer();
 }
-
 function choose(i){
-  if(answered)return;
+  if(answered||isPaused)return;
   answered=true;stopTimer();
   const q=QS[idx];
   const secsLeft=Math.max(0,TIME_PER_Q-(Date.now()-qStartTime)/1000);
@@ -605,33 +685,26 @@ function choose(i){
   });
   const fb=document.getElementById('feedback');
   if(i===q.ans){
-    correct++;streak++;
-    const pts=calcPoints(secsLeft);totalPts+=pts;
-    showPtsPopup('+'+pts);
-    document.getElementById('live-score').textContent=totalPts;
-    fb.className='feedback c show';
-    fb.textContent='✓ Correct! +'+pts+' pts  '+q.exp;
+    correct++;streak++;const pts=calcPoints(secsLeft);totalPts+=pts;
+    showPtsPopup('+'+pts);document.getElementById('live-score').textContent=totalPts;
+    fb.className='feedback c show';fb.textContent='✓ Correct! +'+pts+' pts  '+q.exp;
   }else{wrong++;streak=0;fb.className='feedback w show';fb.textContent='✗ Not quite.  '+q.exp;}
   updateStreakHud();
   document.getElementById('next-btn').className='next-btn show';
 }
-
-function updateStreakHud(){
-  document.getElementById('streak-count').textContent=streak;
-  document.getElementById('streak-hud').style.opacity=streak>=2?'1':'0';
-}
-
+function updateStreakHud(){document.getElementById('streak-count').textContent=streak;document.getElementById('streak-hud').style.opacity=streak>=2?'1':'0';}
 function showPtsPopup(text){
   const el=document.getElementById('pts-popup');el.textContent=text;
   const btn=document.querySelector('.opt.correct');
   if(btn){const r=btn.getBoundingClientRect();el.style.left=(r.right-70)+'px';el.style.top=(r.top+window.scrollY-10)+'px';}
   el.className='pts-popup';void el.offsetWidth;el.className='pts-popup go';
 }
+document.getElementById('next-btn').onclick=()=>{idx++;render();};
 
-document.getElementById('next-btn').onclick=()=>{idx++;saveSessionState();render();};
-
+// ── FINISH ────────────────────────────────────────────────────
 async function finishQuiz(){
   stopTimer();
+  if(realtimeChannel){supabase.removeChannel(realtimeChannel);realtimeChannel=null;}
   showScreen('screen-results');
   document.getElementById('big-score').textContent=totalPts;
   document.getElementById('s-correct').textContent=correct;
@@ -647,16 +720,11 @@ async function finishQuiz(){
   else{msg='🛸 Houston, we have a problem…';sub='Don\'t worry — every astronaut starts somewhere!';}
   document.getElementById('score-msg').textContent=msg;
   document.getElementById('score-sub').textContent=sub;
-  try{
-    await saveScore(playerName,sessionCode,totalPts,correct,timeouts);
-    toast('Score saved to leaderboard!','success');
-  }catch(e){
-    console.warn('Save failed',e);
-    toast('Could not save score — check your connection.');
-  }
+  try{await saveScore(playerName,sessionCode,totalPts,correct,timeouts);toast('Score saved!','success');}catch(e){toast('Could not save score.');}
   loadLeaderboard();
 }
 
+// ── LEADERBOARD ───────────────────────────────────────────────
 async function loadLeaderboard(){
   const el=document.getElementById('lb-list');
   el.innerHTML='<div class="lb-loading">LOADING SCORES...</div>';
@@ -671,12 +739,12 @@ async function loadLeaderboard(){
       const medal=i<3?'<span class="lb-rank">'+medals[i]+'</span>':'<span class="lb-rank rn">'+(i+1)+'</span>';
       return '<div class="lb-row'+(isMe?' me':'')+(i===0?' top1':'')+'">'+medal+'<div class="lb-name">'+esc(e.name)+(isMe?'<span class="you-tag">YOU</span>':'')+'</div><div class="lb-right"><div class="lb-pts">'+e.score+' pts</div><div class="lb-sub">'+(e.correct||0)+'/'+QS.length+' correct</div></div></div>';
     }).join('');
-  }catch(err){el.innerHTML='<div class="lb-empty">Could not load scores.</div>';}
+  }catch(e){el.innerHTML='<div class="lb-empty">Could not load scores.</div>';}
 }
 
+// ── HELPERS ───────────────────────────────────────────────────
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.className='err-box show';setTimeout(()=>el.className='err-box',4000);}
-
 function switchTab(t){
   document.getElementById('tab-r').className='tab'+(t==='r'?' on':'');
   document.getElementById('tab-lb').className='tab'+(t==='lb'?' on':'');
@@ -684,34 +752,24 @@ function switchTab(t){
   document.getElementById('view-lb').className='view'+(t==='lb'?' on':'');
   if(t==='lb')loadLeaderboard();
 }
+function goHome(){
+  idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;
+  playerName='';sessionCode='';streak=0;isHost=false;gamePaused=false;isPaused=false;
+  stopTimer();stopHostLBPolling();clearInterval(waitingPollInterval);
+  if(realtimeChannel){supabase.removeChannel(realtimeChannel);realtimeChannel=null;}
+  lobbyPlayers=[];
+  hostNameInp.value='';createBtn.disabled=true;
+  joinNameInp.value='';joinCodeInp.value='';joinBtn.disabled=true;
+  document.getElementById('paused-overlay').className='paused-overlay';
+  switchTab('r');showScreen('screen-home');
+}
 
-// ── Auto-join from QR URL ────────────────────────────────
+// ── AUTO JOIN FROM QR URL ─────────────────────────────────────
 (function(){
   const params=new URLSearchParams(window.location.search);
   const joinCode=params.get('join');
-  if(joinCode){
-    showScreen('screen-join');
-    document.getElementById('joinCode').value=joinCode.toUpperCase();
-    checkJoinReady();
-  } else if(loadSessionState()&&idx>0&&idx<QS.length){
-    // Recover mid-quiz session
-    toast('Resuming your session...','success');
-    document.getElementById('quiz-session-badge').textContent='🪐 SESSION: '+sessionCode;
-    document.getElementById('live-score').textContent=totalPts;
-    showScreen('screen-quiz');
-    render();
-  }
+  if(joinCode){showScreen('screen-join');document.getElementById('joinCode').value=joinCode.toUpperCase();checkJoinReady();}
 })();
-
-function goHome(){
-  idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;playerName='';sessionCode='';streak=0;
-  clearSessionState();
-  stopTimer();
-  hostNameInp.value='';createBtn.disabled=true;
-  joinNameInp.value='';joinCodeInp.value='';joinBtn.disabled=true;
-  switchTab('r');
-  showScreen('screen-home');
-}
 </script>
 </body>
 </html>
