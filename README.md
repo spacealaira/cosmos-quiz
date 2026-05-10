@@ -7,13 +7,13 @@ A fully interactive, space-themed educational quiz game built with vanilla HTML/
 
 **🌐 Live site:** [spacealaira.github.io/cosmos-quiz](https://spacealaira.github.io/cosmos-quiz/)
 
-## 🚀 Origin Story
+🚀 Origin Story
 
-Built in a single afternoon as a live educational tool 
-for a real event. Went from zero to deployed full-stack 
-app - frontend, database, and live leaderboard - while 
-the session was being planned. The constraints were real: 
-no prep time, real users, had to work first try.
+Built in a single afternoon as a live educational tool for a real event.
+
+I went from zero to a deployed full-stack app - frontend, database, and live leaderboard - while the session was still being planned.
+
+The constraints were real: no prep time, real users, and it had to work on the first try.
 
 ---
 
