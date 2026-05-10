@@ -144,10 +144,53 @@ h1 em{color:var(--teal);font-style:normal}
 @keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
 .err-box{background:rgba(226,75,74,0.09);border:0.5px solid rgba(226,75,74,0.3);border-radius:10px;padding:0.8rem 1rem;font-size:0.85rem;color:#F09595;margin-top:0.75rem;display:none}
 .err-box.show{display:block}
+
+/* ── MOBILE RESPONSIVENESS ─────────────────────────────── */
+@media (max-width: 480px) {
+  .wrap{padding:1rem 0.85rem 4rem}
+  h1{font-size:1.8rem}
+  .logo{width:60px;height:60px;font-size:26px}
+  .card{padding:1.4rem 1.2rem 1.4rem}
+  .code-big{font-size:2rem;letter-spacing:0.2em}
+  .q-text{font-size:1rem}
+  .opt{font-size:0.88rem;padding:0.75rem 0.9rem}
+  .big-score{font-size:2.8rem}
+  .stats{grid-template-columns:1fr 1fr 1fr;gap:0.5rem}
+  .stat-v{font-size:1rem}
+  .stat-l{font-size:0.6rem}
+  .tabs{gap:0.35rem}
+  .tab{font-size:0.56rem;padding:0.55rem 0.3rem}
+  .lb-row{grid-template-columns:32px 1fr auto;gap:0.5rem;padding:0.65rem 0.7rem}
+  .lb-name{font-size:0.85rem}
+  .lb-pts{font-size:0.78rem}
+  .hud-score span{font-size:0.95rem}
+  .live-hud{margin-bottom:1rem}
+  .input.code-input{font-size:1.1rem;letter-spacing:0.18em}
+  .btn{font-size:0.75rem;padding:0.9rem}
+  .next-btn{font-size:0.7rem}
+  .score-msg{font-size:0.95rem}
+}
+@media (max-width: 360px) {
+  .code-big{font-size:1.6rem;letter-spacing:0.12em}
+  .stats{grid-template-columns:1fr 1fr;gap:0.5rem}
+}
+
+.qr-wrap{display:flex;flex-direction:column;align-items:center;margin:0.75rem 0}
+.qr-wrap canvas{border-radius:12px;background:#fff;padding:10px}
+.qr-label{font-size:0.68rem;color:var(--hint);font-family:'Orbitron',monospace;letter-spacing:0.1em;margin-top:0.6rem;text-transform:uppercase}
+
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(226,75,74,0.95);color:#fff;font-family:'Orbitron',monospace;font-size:0.7rem;letter-spacing:0.08em;padding:0.75rem 1.25rem;border-radius:10px;z-index:200;transition:transform 0.3s ease;white-space:nowrap;backdrop-filter:blur(10px)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:rgba(29,158,117,0.95)}
+.reconnecting{display:none;align-items:center;gap:0.5rem;font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--amber);letter-spacing:0.1em;margin-bottom:1rem}
+.reconnecting.show{display:flex}
+.reconnecting-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 0.8s ease-in-out infinite}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <div class="stars" id="stars"></div>
+<div class="toast" id="toast"></div>
 <div class="nebula nebula-1"></div>
 <div class="nebula nebula-2"></div>
 <div class="planet planet-1"></div>
@@ -187,6 +230,10 @@ h1 em{color:var(--teal);font-style:normal}
       <div class="code-hint">Players go to the quiz site and enter this code</div>
       <button class="copy-btn" onclick="copyCode()">📋 COPY CODE</button>
     </div>
+      <div class="qr-wrap" id="qr-container">
+        <canvas id="qr-canvas"></canvas>
+        <div class="qr-label">scan to open quiz</div>
+      </div>
     <button class="btn btn-primary" onclick="hostStartQuiz()">▶ START PLAYING</button>
     <button class="btn btn-secondary" style="margin-top:0.5rem" onclick="showScreen('screen-home')">← BACK TO HOME</button>
   </div>
@@ -267,6 +314,48 @@ h1 em{color:var(--teal);font-style:normal}
 <div class="pts-popup" id="pts-popup"></div>
 
 <script>
+
+// ── Toast notifications ───────────────────────────────────
+let toastTimer=null;
+function toast(msg,type='error'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast'+(type==='success'?' success':'');
+  void el.offsetWidth;
+  el.className+=' show';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.className='toast'+(type==='success'?' success':''),3500);
+}
+
+// ── Session recovery on refresh ───────────────────────────
+function saveSessionState(){
+  if(!sessionCode||!playerName) return;
+  sessionStorage.setItem('cq_session',JSON.stringify({sessionCode,playerName,idx,totalPts,correct,wrong,timeouts,streak}));
+}
+function loadSessionState(){
+  try{
+    const raw=sessionStorage.getItem('cq_session');
+    if(!raw) return false;
+    const s=JSON.parse(raw);
+    if(!s.sessionCode||!s.playerName) return false;
+    sessionCode=s.sessionCode; playerName=s.playerName;
+    idx=s.idx||0; totalPts=s.totalPts||0; correct=s.correct||0;
+    wrong=s.wrong||0; timeouts=s.timeouts||0; streak=s.streak||0;
+    return true;
+  }catch(e){return false;}
+}
+function clearSessionState(){ sessionStorage.removeItem('cq_session'); }
+
+// ── QR Code generator ─────────────────────────────────────
+function generateQR(code){
+  const el=document.getElementById('qr-canvas');
+  el.innerHTML='';
+  const url=window.location.origin+window.location.pathname+'?join='+code;
+  try{
+    new QRCode(el,{text:url,width:140,height:140,colorDark:'#05071a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  }catch(e){ document.getElementById('qr-container').style.display='none'; }
+}
+
 const SUPA_URL='https://uerzvrwlismqdxlwuxkl.supabase.co';
 const SUPA_KEY='sb_publishable_0vnntWRJaunCP0pkKGu-eQ_YoGL6erE';
 const HEADERS={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
@@ -364,8 +453,10 @@ async function createSession(){
     playerName=name;
     document.getElementById('display-code').textContent=code;
     showScreen('screen-created');
+    generateQR(code);
   }catch(e){
     showErr('host-err','Could not create session. Try again.');
+    toast('Could not create session. Check your connection.');
   }
   createBtn.disabled=false;
   createBtn.textContent='✦ CREATE SESSION';
@@ -400,7 +491,14 @@ async function joinSession(){
   joinBtn.textContent='CHECKING...';
   try{
     const exists=await checkSessionExists(code);
-    if(!exists){showErr('join-err','Session not found. Check the code and try again.');joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';return;}
+    if(!exists){showErr('join-err','Session not found. Check the code and try again.');toast('Session not found. Check the code.');joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';return;}
+    // Check duplicate name
+    const existing=await fetchScores(code);
+    if(Array.isArray(existing)&&existing.some(e=>e.name.toLowerCase()===name.toLowerCase())){
+      showErr('join-err','That name is already taken in this session. Try a different name.');
+      toast('Name already taken in this session!');
+      joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';return;
+    }
     startQuiz(name,code);
   }catch(e){
     showErr('join-err','Could not connect. Check your internet and try again.');
@@ -515,7 +613,7 @@ function showPtsPopup(text){
   el.className='pts-popup';void el.offsetWidth;el.className='pts-popup go';
 }
 
-document.getElementById('next-btn').onclick=()=>{idx++;render();};
+document.getElementById('next-btn').onclick=()=>{idx++;saveSessionState();render();};
 
 async function finishQuiz(){
   stopTimer();
@@ -534,7 +632,13 @@ async function finishQuiz(){
   else{msg='🛸 Houston, we have a problem…';sub='Don\'t worry — every astronaut starts somewhere!';}
   document.getElementById('score-msg').textContent=msg;
   document.getElementById('score-sub').textContent=sub;
-  try{await saveScore(playerName,sessionCode,totalPts,correct,timeouts);}catch(e){console.warn('Save failed',e);}
+  try{
+    await saveScore(playerName,sessionCode,totalPts,correct,timeouts);
+    toast('Score saved to leaderboard!','success');
+  }catch(e){
+    console.warn('Save failed',e);
+    toast('Could not save score — check your connection.');
+  }
   loadLeaderboard();
 }
 
@@ -566,8 +670,27 @@ function switchTab(t){
   if(t==='lb')loadLeaderboard();
 }
 
+// ── Auto-join from QR URL ────────────────────────────────
+(function(){
+  const params=new URLSearchParams(window.location.search);
+  const joinCode=params.get('join');
+  if(joinCode){
+    showScreen('screen-join');
+    document.getElementById('joinCode').value=joinCode.toUpperCase();
+    checkJoinReady();
+  } else if(loadSessionState()&&idx>0&&idx<QS.length){
+    // Recover mid-quiz session
+    toast('Resuming your session...','success');
+    document.getElementById('quiz-session-badge').textContent='🪐 SESSION: '+sessionCode;
+    document.getElementById('live-score').textContent=totalPts;
+    showScreen('screen-quiz');
+    render();
+  }
+})();
+
 function goHome(){
   idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;playerName='';sessionCode='';streak=0;
+  clearSessionState();
   stopTimer();
   hostNameInp.value='';createBtn.disabled=true;
   joinNameInp.value='';joinCodeInp.value='';joinBtn.disabled=true;
