@@ -360,7 +360,7 @@ const HEADERS={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorizatio
 const TIME_PER_Q=45, MAX_PTS=100;
 
 // ── Supabase client for Realtime ─────────────────────────────
-const supabase=window.supabase.createClient(SUPA_URL,SUPA_KEY);
+const sbClient=window.supabase.createClient(SUPA_URL,SUPA_KEY);
 
 // ── REST helpers ─────────────────────────────────────────────
 async function apiPost(path,body){const r=await fetch(SUPA_URL+path,{method:'POST',headers:{...HEADERS,'Prefer':'return=representation'},body:JSON.stringify(body)});return r.json();}
@@ -457,8 +457,8 @@ function copyCode(){
 
 // ── REALTIME LOBBY ────────────────────────────────────────────
 function subscribeToLobby(code){
-  if(realtimeChannel)supabase.removeChannel(realtimeChannel);
-  realtimeChannel=supabase.channel('lobby-'+code)
+  if(realtimeChannel)sbClient.removeChannel(realtimeChannel);
+  realtimeChannel=sbClient.channel('lobby-'+code)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'players',filter:'session_code=eq.'+code},payload=>{
       if(!lobbyPlayers.find(p=>p.name===payload.new.name)){
         lobbyPlayers.push(payload.new);
@@ -704,7 +704,7 @@ document.getElementById('next-btn').onclick=()=>{idx++;render();};
 // ── FINISH ────────────────────────────────────────────────────
 async function finishQuiz(){
   stopTimer();
-  if(realtimeChannel){supabase.removeChannel(realtimeChannel);realtimeChannel=null;}
+  if(realtimeChannel){sbClient.removeChannel(realtimeChannel);realtimeChannel=null;}
   showScreen('screen-results');
   document.getElementById('big-score').textContent=totalPts;
   document.getElementById('s-correct').textContent=correct;
@@ -756,7 +756,7 @@ function goHome(){
   idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;
   playerName='';sessionCode='';streak=0;isHost=false;gamePaused=false;isPaused=false;
   stopTimer();stopHostLBPolling();clearInterval(waitingPollInterval);
-  if(realtimeChannel){supabase.removeChannel(realtimeChannel);realtimeChannel=null;}
+  if(realtimeChannel){sbClient.removeChannel(realtimeChannel);realtimeChannel=null;}
   lobbyPlayers=[];
   hostNameInp.value='';createBtn.disabled=true;
   joinNameInp.value='';joinCodeInp.value='';joinBtn.disabled=true;
