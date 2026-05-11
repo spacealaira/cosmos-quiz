@@ -460,15 +460,42 @@ function subscribeToLobby(code){
   if(realtimeChannel)sbClient.removeChannel(realtimeChannel);
   realtimeChannel=sbClient.channel('lobby-'+code)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'players',filter:'session_code=eq.'+code},payload=>{
-      if(!lobbyPlayers.find(p=>p.name===payload.new.name)){
+      if(payload.new&&!lobbyPlayers.find(p=>p.name===payload.new.name)){
         lobbyPlayers.push(payload.new);
         renderLobby();
       }
     })
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'sessions',filter:'code=eq.'+code},payload=>{
-      handleSessionUpdate(payload.new);
+      if(payload.new) handleSessionUpdate(payload.new);
     })
-    .subscribe();
+    .subscribe((status)=>{
+      console.log('Realtime status:', status);
+    });
+  // Also poll as fallback every 3 seconds
+  clearInterval(window._lobbyPoll);
+  window._lobbyPoll=setInterval(async()=>{
+    try{
+      const p=await apiGet('/rest/v1/players?session_code=eq.'+code+'&select=name,joined_at&order=joined_at.asc');
+      if(Array.isArray(p)){
+        let changed=false;
+        p.forEach(player=>{
+          if(!lobbyPlayers.find(lp=>lp.name===player.name)){
+            lobbyPlayers.push(player);
+            changed=true;
+          }
+        });
+        if(changed) renderLobby();
+        // Update waiting count for players
+        const wc=document.getElementById('waiting-count');
+        if(wc) wc.textContent=p.length;
+      }
+      // Check session status for players in waiting room
+      if(!isHost){
+        const s=await apiGet('/rest/v1/sessions?code=eq.'+code+'&select=status');
+        if(Array.isArray(s)&&s.length) handleSessionUpdate(s[0]);
+      }
+    }catch(e){}
+  },3000);
 }
 
 function renderLobby(){
@@ -755,7 +782,7 @@ function switchTab(t){
 function goHome(){
   idx=0;totalPts=0;correct=0;wrong=0;timeouts=0;answered=false;
   playerName='';sessionCode='';streak=0;isHost=false;gamePaused=false;isPaused=false;
-  stopTimer();stopHostLBPolling();clearInterval(waitingPollInterval);
+  stopTimer();stopHostLBPolling();clearInterval(waitingPollInterval);clearInterval(window._lobbyPoll);
   if(realtimeChannel){sbClient.removeChannel(realtimeChannel);realtimeChannel=null;}
   lobbyPlayers=[];
   hostNameInp.value='';createBtn.disabled=true;
