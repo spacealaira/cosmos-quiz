@@ -514,21 +514,28 @@ function renderWaitingCount(n){
 
 // ── SESSION STATUS HANDLER (for players) ─────────────────────
 function handleSessionUpdate(session){
-  if(session.status==='started'&&document.getElementById('screen-waiting').style.display!=='none'){
-    // host started the game — player starts quiz
+  const waitingEl=document.getElementById('screen-waiting');
+  const quizEl=document.getElementById('screen-quiz');
+  const resultsEl=document.getElementById('screen-results');
+  const isWaiting=waitingEl&&waitingEl.style.display==='block';
+  const isPlaying=quizEl&&quizEl.style.display==='block';
+  const isFinished=resultsEl&&resultsEl.style.display==='block';
+
+  if(session.status==='started'&&isWaiting&&!isHost){
+    clearInterval(window._lobbyPoll);
     startQuiz(playerName,sessionCode);
   }
-  if(session.status==='paused'){
+  if(session.status==='paused'&&isPlaying){
     isPaused=true;
     document.getElementById('paused-overlay').className='paused-overlay show';
     stopTimer();
   }
-  if(session.status==='resumed'){
+  if(session.status==='resumed'&&isPlaying){
     isPaused=false;
     document.getElementById('paused-overlay').className='paused-overlay';
-    startTimer();
+    if(answered===false) startTimer();
   }
-  if(session.status==='ended'&&!document.getElementById('screen-results').style.display){
+  if(session.status==='ended'&&isPlaying){
     toast('Host ended the game.','error');
     finishQuiz();
   }
