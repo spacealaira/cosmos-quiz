@@ -471,11 +471,13 @@ function subscribeToLobby(code){
     .subscribe((status)=>{
       console.log('Realtime status:', status);
     });
-  // Also poll as fallback every 3 seconds
+  // Poll every 2 seconds as fallback
   clearInterval(window._lobbyPoll);
+  // Capture code in closure so it's always available
+  const capturedCode=code;
   window._lobbyPoll=setInterval(async()=>{
     try{
-      const p=await apiGet('/rest/v1/players?session_code=eq.'+code+'&select=name,joined_at&order=joined_at.asc');
+      const p=await apiGet('/rest/v1/players?session_code=eq.'+capturedCode+'&select=name,joined_at&order=joined_at.asc');
       if(Array.isArray(p)){
         let changed=false;
         p.forEach(player=>{
@@ -485,31 +487,24 @@ function subscribeToLobby(code){
           }
         });
         if(changed) renderLobby();
-        // Update waiting count for players
         const wc=document.getElementById('waiting-count');
         if(wc) wc.textContent=p.length;
       }
       // Check session status for players in waiting room
       if(!isHost){
-        const s=await apiGet('/rest/v1/sessions?code=eq.'+code+'&select=status');
-        if(Array.isArray(s)&&s.length){
-          const sess=s[0];
-          console.log('Session status poll:', sess.status, 'screen-waiting display:', document.getElementById('screen-waiting').style.display);
-          // Direct check — if started and we're still on waiting screen, go!
-          if(sess.status==='started'){
-            const waitingEl=document.getElementById('screen-waiting');
-            if(waitingEl&&waitingEl.style.display==='block'){
-              console.log('Launching quiz for player!');
-              clearInterval(window._lobbyPoll);
-              startQuiz(playerName,sessionCode);
-            }
-          } else {
-            handleSessionUpdate(sess);
+        const waitingEl=document.getElementById('screen-waiting');
+        if(waitingEl&&waitingEl.style.display==='block'){
+          const s=await apiGet('/rest/v1/sessions?code=eq.'+capturedCode+'&select=status');
+          if(Array.isArray(s)&&s.length&&s[0].status==='started'){
+            clearInterval(window._lobbyPoll);
+            // Use captured values directly in case globals weren't set
+            const pName=playerName||document.getElementById('waiting-code-display').textContent;
+            startQuiz(playerName,capturedCode);
           }
         }
       }
-    }catch(e){}
-  },3000);
+    }catch(e){console.warn('Poll error:',e);}
+  },2000);
 }
 
 function renderLobby(){
@@ -639,17 +634,20 @@ async function joinSession(){
       showScreen('screen-waiting');
       subscribeToLobby(code);
       // Poll player count for waiting screen
-      pollWaitingCount(code);
+      pollWaitingCount(code, name);
     }
   }catch(e){showErr('join-err','Connection error.');toast('Could not connect.');}
   joinBtn.disabled=false;joinBtn.textContent='🎮 JOIN SESSION';
 }
 
 let waitingPollInterval=null;
-function pollWaitingCount(code){
+function pollWaitingCount(code,name){
   clearInterval(waitingPollInterval);
   waitingPollInterval=setInterval(async()=>{
-    try{const p=await apiGet('/rest/v1/players?session_code=eq.'+code+'&select=name');if(Array.isArray(p))renderWaitingCount(p.length);}catch(e){}
+    try{
+      const p=await apiGet('/rest/v1/players?session_code=eq.'+code+'&select=name');
+      if(Array.isArray(p)) renderWaitingCount(p.length);
+    }catch(e){}
   },3000);
 }
 
