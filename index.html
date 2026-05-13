@@ -492,7 +492,21 @@ function subscribeToLobby(code){
       // Check session status for players in waiting room
       if(!isHost){
         const s=await apiGet('/rest/v1/sessions?code=eq.'+code+'&select=status');
-        if(Array.isArray(s)&&s.length) handleSessionUpdate(s[0]);
+        if(Array.isArray(s)&&s.length){
+          const sess=s[0];
+          console.log('Session status poll:', sess.status, 'screen-waiting display:', document.getElementById('screen-waiting').style.display);
+          // Direct check — if started and we're still on waiting screen, go!
+          if(sess.status==='started'){
+            const waitingEl=document.getElementById('screen-waiting');
+            if(waitingEl&&waitingEl.style.display==='block'){
+              console.log('Launching quiz for player!');
+              clearInterval(window._lobbyPoll);
+              startQuiz(playerName,sessionCode);
+            }
+          } else {
+            handleSessionUpdate(sess);
+          }
+        }
       }
     }catch(e){}
   },3000);
